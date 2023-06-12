@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
+import app from './firebase';
 import { View, Text, TextInput, Button, StyleSheet, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 
 const Stack = createStackNavigator();
+
+const auth = getAuth(app);
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    // Add your login logic here
-    // For simplicity, we'll just navigate to the Home screen
-    navigation.navigate('Home');
+    signInWithEmailAndPassword(auth, username, password)
+      .then((userCredential) => {
+        // Login successful
+        const user = userCredential.user;
+        console.log('User logged in:', user);
+        navigation.navigate('Home');
+      })
+      .catch((error) => {
+        // Handle login error
+        console.log('Login failed:', error);
+      });
   };
 
   return (
@@ -54,9 +66,17 @@ const RegisterScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const handleRegister = () => {
-    // Add your register logic here
-    // For simplicity, we'll just navigate back to the Login screen
-    navigation.goBack();
+    createUserWithEmailAndPassword(auth, username, password)
+      .then((userCredential) => {
+        // User registration successful
+        const user = userCredential.user;
+        console.log('User registered:', user);
+        navigation.goBack();
+      })
+      .catch((error) => {
+        // Handle registration error
+        console.log('Registration failed:', error);
+      });
   };
 
   return (
