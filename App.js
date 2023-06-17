@@ -5,6 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import Icon from 'react-native-vector-icons/Ionicons';
+import ScreenLockScreen from './ScreenLockMode';
 
 const Stack = createStackNavigator();
 const auth = getAuth(app);
@@ -122,7 +123,7 @@ const HomeScreen = ({ navigation }) => {
     <View style={styles.container}>
       <Text style={styles.heading}>Home</Text>
       <View style={styles.iconContainer}>
-        <TouchableOpacity onPress={() => handleNavigation('Screen1')} style={styles.iconButton}>
+        <TouchableOpacity onPress={() => handleNavigation('ScreenLock')} style={styles.iconButton}>
           <View style={styles.iconWrapper}>
             <Icon name="ios-lock-closed" size={50} color="green" />
           </View>
@@ -155,6 +156,7 @@ const App = () => {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="ScreenLock" component={ScreenLockScreen} /> 
         {/* Add more screens here */}
       </Stack.Navigator>
     </NavigationContainer>
