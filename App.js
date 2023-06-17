@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import app from './firebase';
-import { View, Text, TextInput, Button, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Stack = createStackNavigator();
-
 const auth = getAuth(app);
 
 const LoginScreen = ({ navigation }) => {
@@ -113,11 +113,37 @@ const RegisterScreen = ({ navigation }) => {
   );
 };
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
+  const handleNavigation = (screenName) => {
+    navigation.navigate(screenName);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Home</Text>
-      <Text style={styles.text}>Welcome to the Home Screen!</Text>
+      <View style={styles.iconContainer}>
+        <TouchableOpacity onPress={() => handleNavigation('Screen1')} style={styles.iconButton}>
+          <View style={styles.iconWrapper}>
+            <Icon name="ios-lock-closed" size={50} color="green" />
+          </View>
+          <Text style={styles.iconText}>Screen Lock</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleNavigation('Screen2')} style={styles.iconButton}>
+          <View style={styles.iconWrapper}>
+            <Icon name="ios-person" size={50} color="green" />
+          </View>
+          <Text style={styles.iconText}>Profile</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleNavigation('Screen3')} style={styles.iconButton}>
+          <View style={styles.iconWrapper}>
+            <Icon name="ios-settings" size={50} color="green" />
+          </View>
+          <Text style={styles.iconText}>Settings</Text>
+        </TouchableOpacity>
+        {/* Add more icon buttons as needed */}
+      </View>
     </View>
   );
 };
@@ -129,6 +155,7 @@ const App = () => {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
+        {/* Add more screens here */}
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -141,14 +168,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  iconContainer: {
-    alignItems: 'center',
-    marginBottom: 10,
-  },
   icon: {
     width: 250,
     height: 250,
     resizeMode: 'contain',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  iconButton: {
+    alignItems: 'center',
+    margin: 16,
+  },
+  iconWrapper: {
+    borderWidth: 2,
+    borderColor: 'green',
+    borderRadius: 50,
+    padding: 10,
+  },
+  iconText: {
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'grey',
   },
   loginContainer: {
     justifyContent: 'center',
