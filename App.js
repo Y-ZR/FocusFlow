@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import app from './firebase';
 import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,9 +6,20 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import Icon from 'react-native-vector-icons/Ionicons';
 import ScreenLockScreen from './ScreenLockMode';
+import { getFirestore, collection, addDoc, doc, getDoc } from 'firebase/firestore';
 
 const Stack = createStackNavigator();
 const auth = getAuth(app);
+const db = getFirestore(app);
+
+const createNewUserDocument = (userId, username) => {
+  const userRef = collection(db, 'users');
+  addDoc(userRef, {
+    userId: userId,
+    username: username,
+    coins: 0, // Initial coin balance
+  });
+};
 
 const LoginScreen = ({ navigation }) => {
   const [username, setUsername] = useState('');
@@ -72,6 +83,7 @@ const RegisterScreen = ({ navigation }) => {
         // User registration successful
         const user = userCredential.user;
         console.log('User registered:', user);
+        createNewUserDocument(user.uid, username); // Create user document in Firestore
         navigation.goBack();
       })
       .catch((error) => {
@@ -100,9 +112,9 @@ const RegisterScreen = ({ navigation }) => {
             onChangeText={(text) => setPassword(text)}
             placeholderTextColor="#FFF"
           />
-          <Button 
+          <Button
             title="Register"
-            onPress={handleRegister} 
+            onPress={handleRegister}
           />
           <Button
             title="Back"
@@ -115,6 +127,24 @@ const RegisterScreen = ({ navigation }) => {
 };
 
 const HomeScreen = ({ navigation }) => {
+  const [coinBalance, setCoinBalance] = useState(0);
+  const user = auth.currentUser;
+
+  useEffect(() => {
+    if (user) {
+      fetchCoinBalance(user.uid);
+    }
+  }, [user]);
+
+  const fetchCoinBalance = async (userId) => {
+    const userDocRef = doc(db, 'users', userId);
+    const userDocSnap = await getDoc(userDocRef);
+    if (userDocSnap.exists()) {
+      const userData = userDocSnap.data();
+      setCoinBalance(userData.coins);
+    }
+  };
+
   const handleNavigation = (screenName) => {
     navigation.navigate(screenName);
   };
@@ -122,6 +152,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Home</Text>
+      <Text style={styles.text}>Coin Balance: {coinBalance}</Text>
       <View style={styles.iconContainer}>
         <TouchableOpacity onPress={() => handleNavigation('ScreenLock')} style={styles.iconButton}>
           <View style={styles.iconWrapper}>
