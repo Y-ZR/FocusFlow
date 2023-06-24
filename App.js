@@ -3,10 +3,10 @@ import app from './firebase';
 import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import Icon from 'react-native-vector-icons/Ionicons';
 import ScreenLockScreen from './ScreenLockMode';
-import { getFirestore, collection, addDoc, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 
 const Stack = createStackNavigator();
 const auth = getAuth(app);
@@ -133,6 +133,19 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     if (user) {
       fetchCoinBalance(user.uid);
+
+      // Set up a real-time listener for the user document
+      const userCollectionRef = collection(db, 'users');
+      const userQuery = query(userCollectionRef, where('userId', '==', user.uid));
+      const unsubscribe = onSnapshot(userQuery, (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          setCoinBalance(userData.coins);
+        });
+      });
+
+      // Clean up the listener when the component unmounts
+      return () => unsubscribe();
     }
   }, [user]);
 
