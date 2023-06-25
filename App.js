@@ -5,7 +5,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { AntDesign } from '@expo/vector-icons';
 import ScreenLockScreen from './ScreenLockMode';
+import ProfileScreen from './ProfileScreen';
+import SettingsScreen from './SettingsScreen';
+import ShopScreen from './ShopScreen';
+import TimeTrackerScreen from './TimeTrackerScreen';
+import LeaderboardScreen from './LeaderboardScreen';
+import FFScreen from './FFScreen';
 import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 
 const Stack = createStackNavigator();
@@ -112,14 +119,8 @@ const RegisterScreen = ({ navigation }) => {
             onChangeText={(text) => setPassword(text)}
             placeholderTextColor="#FFF"
           />
-          <Button
-            title="Register"
-            onPress={handleRegister}
-          />
-          <Button
-            title="Back"
-            onPress={() => navigation.goBack()}
-          />
+          <Button title="Register" onPress={handleRegister} />
+          <Button title="Back" onPress={() => navigation.goBack()} />
         </View>
       </View>
     </View>
@@ -167,6 +168,7 @@ const HomeScreen = ({ navigation }) => {
       <Text style={styles.heading}>Home</Text>
       <Text style={styles.text}>Coin Balance: {coinBalance}</Text>
       <View style={styles.iconContainer}>
+        {/* Existing icons */}
         <TouchableOpacity onPress={() => handleNavigation('ScreenLock')} style={styles.iconButton}>
           <View style={styles.iconWrapper}>
             <Icon name="ios-lock-closed" size={50} color="green" />
@@ -174,20 +176,48 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.iconText}>Screen Lock</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => handleNavigation('Screen2')} style={styles.iconButton}>
+        <TouchableOpacity onPress={() => handleNavigation('Profile')} style={styles.iconButton}>
           <View style={styles.iconWrapper}>
             <Icon name="ios-person" size={50} color="green" />
           </View>
           <Text style={styles.iconText}>Profile</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => handleNavigation('Screen3')} style={styles.iconButton}>
+        <TouchableOpacity onPress={() => handleNavigation('Settings')} style={styles.iconButton}>
           <View style={styles.iconWrapper}>
             <Icon name="ios-settings" size={50} color="green" />
           </View>
           <Text style={styles.iconText}>Settings</Text>
         </TouchableOpacity>
-        {/* Add more icon buttons as needed */}
+
+        <TouchableOpacity onPress={() => handleNavigation('Leaderboard')} style={styles.iconButton}>
+          <View style={styles.iconWrapper}>
+            <Icon name="ios-podium" size={50} color="green" />
+          </View>
+          <Text style={styles.iconText}>Leaderboard</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleNavigation('Shop')} style={styles.iconButton}>
+          <View style={styles.iconWrapper}>
+            <Icon name="ios-cart" size={50} color="green" />
+          </View>
+          <Text style={styles.iconText}>Shop</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => handleNavigation('TimeTracker')} style={styles.iconButton}>
+          <View style={styles.iconWrapper}>
+            <AntDesign name="clockcircle" size={50} color="green" />
+          </View>
+          <Text style={styles.iconText}>Time Tracker</Text>
+        </TouchableOpacity>
+
+        {/* New icon */}
+        <TouchableOpacity onPress={() => handleNavigation('FocusFriends')} style={styles.iconButton}>
+          <View style={styles.iconWrapper}>
+            <Icon name="people" size={50} color="green" />
+          </View>
+          <Text style={styles.iconText}>Focus Friends</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -201,6 +231,12 @@ const App = () => {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="ScreenLock" component={ScreenLockScreen} /> 
+        <Stack.Screen name="Profile" component={ProfileScreen} /> 
+        <Stack.Screen name="Settings" component={SettingsScreen} /> 
+        <Stack.Screen name="Leaderboard" component={LeaderboardScreen} /> 
+        <Stack.Screen name="Shop" component={ShopScreen} /> 
+        <Stack.Screen name="TimeTracker" component={TimeTrackerScreen} /> 
+        <Stack.Screen name="FocusFriends" component={FFScreen} /> 
         {/* Add more screens here */}
       </Stack.Navigator>
     </NavigationContainer>
