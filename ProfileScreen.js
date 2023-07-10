@@ -86,12 +86,15 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
     },
     backButton: {
-      marginRight: 16,
+      position: 'absolute',
+      top: 16,
+      left: 16,
+      zIndex: 1,
     },
     backButtonText: {
       fontSize: 18,
-      color: 'green',
-      textDecorationLine: 'underline',
+      fontWeight: 'bold',
+      color: '#FFF',
     },
     avatarsButton: {
       backgroundColor: 'green',

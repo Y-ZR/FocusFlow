@@ -1,66 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const ShopScreen = () => {
-  const [time, setTime] = useState('');
-  const [countdown, setCountdown] = useState(0);
   const navigation = useNavigation();
-  let mvar = 0;
-  let coinsEarned = 0;
 
-  const handleTimerEnd = () => {
-    Alert.alert('Congratulations', 'You earned ' + coinsEarned + ' coins!', [
-      { text: 'Return to Timer', onPress: () => navigation.goBack() },
-    ]);
-
-  };
-  
-  useEffect(() => {
-    let timer;
-    if (countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-  
-      return () => {
-        clearInterval(timer);
-      };
-    } else if (countdown === 0) {
-      if (mvar == 1) {
-          handleTimerEnd();
-          mvar = 0;
-      } 
-    }
-  }, [countdown]);
-
-  const handleStartCountdown = () => {
-    const parsedTime = parseInt(time);
-    if (isNaN(parsedTime) || parsedTime <= 0) {
-      Alert.alert('Invalid Time', 'Please enter a valid time in minutes.');
-      return;
-    }
-    coinsEarned += parsedTime;
-    mvar = 1;
-    setTime('');
-    setCountdown(parsedTime * 60);  
-  };
-
-  const handleQuitCountdown = () => {
-    Alert.alert(
-      'Quit Screen Lock Mode',
-      'Are you sure you want to quit the Screen Lock Mode? You will not earn any coins!',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Quit', style: 'destructive', onPress: () => navigation.goBack() },
-      ]
-    );
-  };
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  const handleBuy = (itemNumber) => {
+    // Handle buy functionality based on itemNumber
+    console.log(`Buy item ${itemNumber}`);
   };
 
   return (
@@ -68,34 +15,67 @@ const ShopScreen = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
-      <Text style={styles.heading}>Screen Lock Mode</Text>
-      <Text style={styles.subText}>Please enter the amount of time (in mins) you would like to lock your phone:</Text>
-      <View style={styles.timerContainer}>
-        {countdown > 0 ? (
-          <Text style={styles.timer}>{formatTime(countdown)}</Text>
-        ) : (
-          <TextInput
-            style={styles.input}
-            placeholder="Enter time in minutes"
-            value={time}
-            onChangeText={setTime}
-            keyboardType="numeric"
-            maxLength={2} // Limiting input to 2 digits
-            textAlign="center"
-            fontSize={48}
-            autoFocus // Automatically focus on input
-          />
-        )}
+      <View style={styles.headerContainer}>
+        <Text style={styles.heading}>SHOP</Text>
       </View>
-      {countdown > 0 ? (
-        <TouchableOpacity style={styles.button} onPress={handleQuitCountdown}>
-          <Text style={styles.buttonText}>Quit</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={styles.button} onPress={handleStartCountdown}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
-      )}
+      <View style={styles.gridContainer}>
+        <View style={styles.row}>
+          <View style={styles.itemContainer}>
+            <Image source={require('./assets/ORBIMG1.jpg')} style={styles.image} />
+            <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(1)}>
+              <Text style={styles.buyButtonText}>BUY: 100 coins</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.itemContainer}>
+            <Image source={require('./assets/ORBIMG2.jpg')} style={styles.image} />
+            <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(2)}>
+              <Text style={styles.buyButtonText}>BUY: 200 coins</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.itemContainer}>
+            <Image source={require('./assets/ORBIMG3.jpg')} style={styles.image} />
+            <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(3)}>
+              <Text style={styles.buyButtonText}>BUY: 300 coins</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.itemContainer}>
+            <Image source={require('./assets/ORBIMG4.jpg')} style={styles.image} />
+            <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(4)}>
+              <Text style={styles.buyButtonText}>BUY: 400 coins</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.itemContainer}>
+            <Image source={require('./assets/ORBIMG5.jpg')} style={styles.image} />
+            <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(5)}>
+              <Text style={styles.buyButtonText}>BUY: 500 coins</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.itemContainer}>
+            <Image source={require('./assets/ORBIMG6.jpg')} style={styles.image} />
+            <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(6)}>
+              <Text style={styles.buyButtonText}>BUY: 600 coins</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        <View style={styles.row}>
+          <View style={styles.itemContainer}>
+            <Image source={require('./assets/ORBIMG7.jpg')} style={styles.image} />
+            <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(7)}>
+              <Text style={styles.buyButtonText}>BUY: 700 coins</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.itemContainer}>
+            <Image source={require('./assets/ORBIMG8.jpg')} style={styles.image} />
+            <TouchableOpacity style={styles.buyButton} onPress={() => handleBuy(8)}>
+              <Text style={styles.buyButtonText}>BUY: 800 coins</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
     </View>
   );
 };
@@ -104,7 +84,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    justifyContent: 'center',
     alignItems: 'center',
   },
   backButton: {
@@ -118,50 +97,45 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFF',
   },
+  headerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 24,
+  },
   heading: {
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 16,
     color: '#FFF',
   },
-  subText: {
-    fontSize: 16,
-    marginLeft: 16,   
-    marginRight: 16,
-    marginBottom: 32,
-    color: '#FFF',
-    textAlign: 'center',
+  gridContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  timerContainer: {
-    marginBottom: 32,
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
-  timer: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#FFF',
+  itemContainer: {
+    alignItems: 'center',
+    marginHorizontal: 10,
+    marginBottom: 20,
   },
-  input: {
-    width: 200,
-    height: 80,
-    backgroundColor: '#000',
-    color: '#FFF',
-    fontSize: 48,
-    fontWeight: 'bold',
-    borderWidth: 0,
-    borderBottomWidth: 2,
-    borderBottomColor: '#FFF',
-    textAlign: 'center',
-    paddingBottom: 8,
-    marginBottom: 32,
+  image: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
   },
-  button: {
+  buyButton: {
+    marginTop: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
     backgroundColor: '#00FF00',
     borderRadius: 8,
   },
-  buttonText: {
-    fontSize: 24,
+  buyButtonText: {
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#000',
   },
