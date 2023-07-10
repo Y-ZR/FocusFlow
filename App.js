@@ -8,11 +8,13 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { AntDesign } from '@expo/vector-icons';
 import ScreenLockScreen from './ScreenLockMode';
 import ProfileScreen from './ProfileScreen';
-import SettingsScreen from './SettingsScreen';
 import ShopScreen from './ShopScreen';
 import TimeTrackerScreen from './TimeTrackerScreen';
 import LeaderboardScreen from './LeaderboardScreen';
 import FFScreen from './FFScreen';
+import SettingsScreen from './SettingsScreen';
+import ChangeUsernameScreen from './ChangeUsernameScreen';
+import ChangePasswordScreen from './ChangePasswordScreen';
 import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 
 const Stack = createStackNavigator();
@@ -232,11 +234,13 @@ const App = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="ScreenLock" component={ScreenLockScreen} /> 
         <Stack.Screen name="Profile" component={ProfileScreen} /> 
-        <Stack.Screen name="Settings" component={SettingsScreen} /> 
         <Stack.Screen name="Leaderboard" component={LeaderboardScreen} /> 
         <Stack.Screen name="Shop" component={ShopScreen} /> 
         <Stack.Screen name="TimeTracker" component={TimeTrackerScreen} /> 
-        <Stack.Screen name="FocusFriends" component={FFScreen} /> 
+        <Stack.Screen name="FocusFriends" component={FFScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen name="ChangeUsername" component={ChangeUsernameScreen} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         {/* Add more screens here */}
       </Stack.Navigator>
     </NavigationContainer>
