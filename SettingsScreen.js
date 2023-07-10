@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
@@ -13,10 +14,20 @@ const SettingsScreen = () => {
     navigation.navigate('ChangePassword'); // Navigate to ChangePassword page
   };
 
-  const handleLogout = () => {
-    // Implement logout functionality
-    // Example: Clear user session, navigate to login screen, etc.
-    Alert.alert('Logout', 'Functionality to logout goes here.');
+  const handleLogout = async () => {
+    try {
+      // Implement logout functionality
+      // Example: Clear user session, navigate to login screen, etc.
+    
+      // Clear user session
+      await AsyncStorage.clear();
+    
+      // Navigate to the login screen
+      navigation.navigate('Login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      // Show an error message or perform any necessary error handling
+    }
   };
 
   return (
