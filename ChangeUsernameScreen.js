@@ -1,21 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { collection, query, where, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
+import { db, auth } from './firebase';
 
 const ChangeUsernameScreen = () => {
-  const [newUsername, setNewUsername] = useState('');
   const navigation = useNavigation();
+  const [newUsername, setNewUsername] = useState('');
 
-  const handleUsernameUpdate = () => {
+  const handleUsernameUpdate = async () => {
     // Implement username update logic
-    // Example: Update username in the database, display success message, etc.
-    console.log('New username:', newUsername);
-    // Reset input field
-    setNewUsername('');
+    console.log(newUsername);
+    try {
+      const userId = auth.currentUser?.uid; // Get the currently authenticated user's ID
+      const usersCollectionRef = collection(db, 'users');
+      const querySnapshot = await getDocs(query(usersCollectionRef, where('userId', '==', userId)));
+
+      if (!querySnapshot.empty) {
+        const documentSnapshot = querySnapshot.docs[0];
+        const userDocRef = doc(db, 'users', documentSnapshot.id);
+
+        await updateDoc(userDocRef, { username: newUsername });
+        console.log('Username updated successfully.');
+      }
+    } catch (error) {
+      console.log('Error updating username:', error);
+    }
   };
 
   const handleCancel = () => {
     navigation.goBack(); // Navigate back to the previous screen
+  };
+
+  const handleChange = (event) => {
+    const { text } = event.nativeEvent;
+    setNewUsername(text);
+    console.log('New username:', text);
   };
 
   return (
@@ -24,8 +44,8 @@ const ChangeUsernameScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="New Username"
+        onChange={handleChange}
         value={newUsername}
-        onChangeText={setNewUsername}
       />
       <TouchableOpacity style={styles.button} onPress={handleUsernameUpdate}>
         <Text style={styles.buttonText}>Update Username</Text>

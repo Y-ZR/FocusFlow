@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { collection, query, where, doc, getDoc, getDocs  } from 'firebase/firestore';
-import { db, auth } from './firebase'; // Assuming you have the Firebase configuration and authentication in a separate file
+import { db, auth } from './firebase';
 
 const ProfileScreen = () => {
   const navigation = useNavigation();
