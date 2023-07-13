@@ -1,5 +1,5 @@
-import React, { useState,useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { collection, query, where, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { db, auth } from './firebase';
@@ -7,9 +7,35 @@ import { db, auth } from './firebase';
 const ChangeUsernameScreen = () => {
   const navigation = useNavigation();
   const [newUsername, setNewUsername] = useState('');
+  const [username, setUsername] = useState('');
+  const [coins, setCoins] = useState(0);
+
+  useEffect(() => {
+    // Fetch the user's data from Firestore
+    const fetchUserData = async () => {
+      try {
+        const userId = auth.currentUser?.uid; // Get the currently authenticated user's ID
+        const usersCollectionRef = collection(db, 'users');
+        const querySnapshot = await getDocs(query(usersCollectionRef, where('userId', '==', userId)));
+        if (!querySnapshot.empty) {
+          const documentSnapshot = querySnapshot.docs[0];
+          const userDocRef = doc(db, 'users', documentSnapshot.id);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            setUsername(userData.username);
+            setCoins(userData.coins);
+          }
+        }
+      } catch (error) {
+        console.log('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleUsernameUpdate = async () => {
-    // Implement username update logic
     console.log(newUsername);
     try {
       const userId = auth.currentUser?.uid; // Get the currently authenticated user's ID
@@ -22,6 +48,9 @@ const ChangeUsernameScreen = () => {
 
         await updateDoc(userDocRef, { username: newUsername });
         console.log('Username updated successfully.');
+        Alert.alert('Success', 'Username updated successfully');
+        setNewUsername('');
+        navigation.goBack();
       }
     } catch (error) {
       console.log('Error updating username:', error);
@@ -41,6 +70,7 @@ const ChangeUsernameScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Change Username</Text>
+      <Text style={styles.username}>Current username: {username}</Text>
       <TextInput
         style={styles.input}
         placeholder="New Username"
@@ -70,13 +100,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: '#FFF',
   },
+  username: {
+    marginTop: 16,
+    fontSize: 24,
+    color: 'white',
+  },
   input: {
-    width: 200,
+    width: '80%',
     height: 40,
     backgroundColor: '#FFF',
     borderRadius: 8,
     paddingHorizontal: 10,
     marginBottom: 16,
+    marginTop: 16,
   },
   button: {
     paddingHorizontal: 16,

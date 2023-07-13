@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { auth } from './firebase';
 
 const ChangePasswordScreen = () => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -8,7 +10,7 @@ const ChangePasswordScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const navigation = useNavigation();
 
-  const handleChangePassword = () => {
+  const handleChangePassword = async() => {
     if (currentPassword === '') {
       Alert.alert('Current Password', 'Please enter your current password.');
       return;
@@ -24,16 +26,32 @@ const ChangePasswordScreen = () => {
       return;
     }
 
-    // TODO: Implement password change functionality
-    // Here you can write the logic to update the password in your authentication system
-
-    Alert.alert('Password Changed', 'Your password has been successfully changed.');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-
-    navigation.goBack(); // Go back to the previous screen after password change
+    const user = auth.currentUser;
+    if (!user) {
+      Alert.alert('User Not Found', 'Unable to find the current user.');
+      return;
+    }
+    
+    try {
+      // reauthenticating
+      await reauthenticate(currentPassword);
+      // updating password
+      await updatePassword(user, newPassword);
+      Alert.alert('Password Changed', 'Your password has been successfully changed.');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      navigation.goBack();
+    } catch(error){
+      console.log(error);
+    }
   };
+
+  const reauthenticate = currentPassword => {
+    const user = auth.currentUser;
+    const cred = EmailAuthProvider.credential(user.email, currentPassword);
+    return reauthenticateWithCredential(user, cred);
+  }
 
   const handleCancel = () => {
     navigation.goBack(); // Go back to the previous screen without making any changes
