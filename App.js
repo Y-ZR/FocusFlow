@@ -131,6 +131,7 @@ const RegisterScreen = ({ navigation }) => {
 
 const HomeScreen = ({ navigation }) => {
   const [coinBalance, setCoinBalance] = useState(0);
+  const[username, setUsername] = useState('');
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -144,6 +145,7 @@ const HomeScreen = ({ navigation }) => {
         querySnapshot.forEach((doc) => {
           const userData = doc.data();
           setCoinBalance(userData.coins);
+          setUsername(userData.username);
         });
       });
 
@@ -167,7 +169,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Home</Text>
+      <Text style={styles.heading}>Welcome, {username}.</Text>
       <Text style={styles.text}>Coin Balance: {coinBalance}</Text>
       <View style={styles.iconContainer}>
         {/* Existing icons */}
