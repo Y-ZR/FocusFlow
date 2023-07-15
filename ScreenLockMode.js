@@ -115,7 +115,7 @@ const ScreenLockScreen = () => {
             keyboardType="numeric"
             textAlign="center"
             fontSize={48}
-            autoFocus // Automatically focus on input
+            autoFocus
           />
         )}
       </View>
