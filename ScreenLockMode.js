@@ -8,22 +8,20 @@ const ScreenLockScreen = () => {
   const [time, setTime] = useState('');
   const [countdown, setCountdown] = useState(0);
   const [coinBalance, setCoinBalance] = useState(0);
+  const [earnedCoins, setEarnedCoins] = useState(0);
+  const [isQuitting, setIsQuitting] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
     let timer;
-    const earnedCoins = 2;
 
     if (countdown > 0) {
       timer = setInterval(() => {
-        console.log('Counting.');
         setCountdown((prevCountdown) => prevCountdown - 1);
       }, 1000);
-    } else if (countdown === 0 && coinBalance > 0) {
-      // Update coin balance in Firestore when countdown reaches 0
-      console.log('Countdown done.');
-      console.log(earnedCoins);
+    } else if (countdown === 0 && earnedCoins > 0 && !isQuitting) {
       updateCoinBalance(earnedCoins);
+      Alert.alert('Timer Completed', `You earned ${earnedCoins} coins!`);
     }
 
     return () => {
@@ -40,7 +38,8 @@ const ScreenLockScreen = () => {
 
     setTime('');
     setCountdown(parsedTime * 60);
-    setCoinBalance(parsedTime); // Increment coinBalance by parsedTime
+    setEarnedCoins(parsedTime); // Set the earned coins to the parsedTime (1 coin per minute)
+    setIsQuitting(false); // Reset the quitting flag
   };
 
   const handleQuitCountdown = () => {
@@ -49,9 +48,18 @@ const ScreenLockScreen = () => {
       'Are you sure you want to quit the Screen Lock Mode?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Quit', style: 'destructive', onPress: () => setCountdown(0) },
+        { text: 'Quit', style: 'destructive', onPress: handleQuitConfirmed },
       ]
     );
+  };
+
+  const handleQuitConfirmed = () => {
+    setIsQuitting(true);
+    setCountdown(0);
+  };
+  
+  const handleBackButton = () => {
+    navigation.goBack();
   };
 
   const formatTime = (seconds) => {
@@ -88,9 +96,11 @@ const ScreenLockScreen = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Back</Text>
-      </TouchableOpacity>
+      {countdown === 0 && (
+        <TouchableOpacity style={styles.backButton} onPress={handleBackButton}>
+          <Text style={styles.backButtonText}>Back</Text>
+        </TouchableOpacity>
+      )}
       <Text style={styles.heading}>Screen Lock Mode</Text>
       <Text style={styles.subText}>Please enter the amount of time (in mins) you would like to lock your phone:</Text>
       <View style={styles.timerContainer}>
@@ -103,7 +113,6 @@ const ScreenLockScreen = () => {
             value={time}
             onChangeText={setTime}
             keyboardType="numeric"
-            maxLength={2} // Limiting input to 2 digits
             textAlign="center"
             fontSize={48}
             autoFocus // Automatically focus on input
@@ -118,6 +127,11 @@ const ScreenLockScreen = () => {
         <TouchableOpacity style={styles.button} onPress={handleStartCountdown}>
           <Text style={styles.buttonText}>Start</Text>
         </TouchableOpacity>
+      )}
+      {countdown > 0 && (
+        <View style={styles.coinBalanceContainer}>
+          <Text style={styles.coinBalanceText}>Coins to be earned: {earnedCoins}</Text>
+        </View>
       )}
     </View>
   );
@@ -187,6 +201,14 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#000',
+  },
+  coinBalanceContainer: {
+    marginTop: 16,
+  },
+  coinBalanceText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFF',
   },
 });
 
