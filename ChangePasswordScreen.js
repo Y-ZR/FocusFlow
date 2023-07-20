@@ -59,6 +59,9 @@ const ChangePasswordScreen = () => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Text style={styles.backButtonText}>Back</Text>
+      </TouchableOpacity>
       <Text style={styles.heading}>Change Password</Text>
       <TextInput
         style={styles.input}
@@ -81,10 +84,10 @@ const ChangePasswordScreen = () => {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
       />
-      <TouchableOpacity style={[styles.button, { marginTop: 16 }]} onPress={handleChangePassword}>
+      <TouchableOpacity style={[styles.buttonGreen, { marginTop: 16 }]} onPress={handleChangePassword}>
         <Text style={styles.buttonText}>Change Password</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.button, { marginTop: 16 }]} onPress={handleCancel}>
+      <TouchableOpacity style={[styles.cancelButton, { marginTop: 16 }]} onPress={handleCancel}>
         <Text style={styles.buttonText}>Cancel</Text>
       </TouchableOpacity>
     </View>
@@ -94,15 +97,26 @@ const ChangePasswordScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#121212',
     justifyContent: 'center',
     alignItems: 'center',
   },
   heading: {
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 30,
     color: '#FFF',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 16,
+    zIndex: 1,
+  },
+  backButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#BBB', // Light gray color for back button text in dark mode
   },
   input: {
     width: '60%',
@@ -112,16 +126,30 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 12,
   },
-  button: {
+  buttonGreen: {
+    marginTop: 16,
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#00FF00',
+    paddingVertical: 12,
+    backgroundColor: '#006400', // Duller green color for buttons
     borderRadius: 8,
+    width: '42%', // Set a fixed width for the buttons
+    justifyContent: 'center', // Center the text inside the button
+    alignItems: 'center', // Center the text inside the button
+  },
+  cancelButton: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#006400', // Duller green color for buttons
+    borderRadius: 8,
+    width: '22%', // Set a fixed width for the buttons
+    justifyContent: 'center', // Center the text inside the button
+    alignItems: 'center', // Center the text inside the button
   },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#FFF', // White text color for buttons in dark mode
   },
 });
 

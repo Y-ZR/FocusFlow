@@ -36,13 +36,13 @@ const SettingsScreen = () => {
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
       <Text style={styles.heading}>Settings</Text>
-      <TouchableOpacity style={styles.button} onPress={handleUsernameChange}>
+      <TouchableOpacity style={styles.buttonGreen} onPress={handleUsernameChange}>
         <Text style={styles.buttonText}>Change Username</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handlePasswordChange}>
+      <TouchableOpacity style={styles.buttonGreen} onPress={handlePasswordChange}>
         <Text style={styles.buttonText}>Change Password</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
     </View>
@@ -52,38 +52,51 @@ const SettingsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#121212',
     justifyContent: 'center',
     alignItems: 'center',
   },
   heading: {
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#FFF',
+    marginBottom: 24, // Move the heading down with more margin
+    color: '#FFF', // White text color for dark mode
   },
   backButton: {
     position: 'absolute',
-    top: 16,
+    top: 40,
     left: 16,
     zIndex: 1,
   },
   backButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: '#BBB', // Light gray color for back button text in dark mode
   },
-  button: {
+  buttonGreen: {
     marginTop: 16,
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#00FF00',
+    paddingVertical: 12,
+    backgroundColor: '#006400', // Duller green color for buttons
     borderRadius: 8,
+    width: '43%', // Set a fixed width for the buttons
+    justifyContent: 'center', // Center the text inside the button
+    alignItems: 'center', // Center the text inside the button
+  },
+  logoutButton: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: '#006400', // Duller green color for buttons
+    borderRadius: 8,
+    width: '22%', // Set a fixed width for the buttons
+    justifyContent: 'center', // Center the text inside the button
+    alignItems: 'center', // Center the text inside the button
   },
   buttonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#FFF', // White text color for buttons in dark mode
   },
 });
 

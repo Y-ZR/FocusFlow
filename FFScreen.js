@@ -1,66 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const FFScreen = () => {
-  const [time, setTime] = useState('');
-  const [countdown, setCountdown] = useState(0);
   const navigation = useNavigation();
-  let mvar = 0;
-  let coinsEarned = 0;
 
-  const handleTimerEnd = () => {
-    Alert.alert('Congratulations', 'You earned ' + coinsEarned + ' coins!', [
-      { text: 'Return to Timer', onPress: () => navigation.goBack() },
-    ]);
-
-  };
-  
-  useEffect(() => {
-    let timer;
-    if (countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
-  
-      return () => {
-        clearInterval(timer);
-      };
-    } else if (countdown === 0) {
-      if (mvar == 1) {
-          handleTimerEnd();
-          mvar = 0;
-      } 
-    }
-  }, [countdown]);
-
-  const handleStartCountdown = () => {
-    const parsedTime = parseInt(time);
-    if (isNaN(parsedTime) || parsedTime <= 0) {
-      Alert.alert('Invalid Time', 'Please enter a valid time in minutes.');
-      return;
-    }
-    coinsEarned += parsedTime;
-    mvar = 1;
-    setTime('');
-    setCountdown(parsedTime * 60);  
+  const addFriends = () => {
+    navigation.navigate('AddFriends'); // Navigate to AddFriends page
   };
 
-  const handleQuitCountdown = () => {
-    Alert.alert(
-      'Quit Screen Lock Mode',
-      'Are you sure you want to quit the Screen Lock Mode? You will not earn any coins!',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Quit', style: 'destructive', onPress: () => navigation.goBack() },
-      ]
-    );
+  const removeFriends = () => {
+    navigation.navigate('RemoveFriends'); // Navigate to RemoveFriends
   };
 
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
+  const handleGoToFriendRequests = () => {
+    navigation.navigate('FriendRequests');
   };
 
   return (
@@ -68,34 +22,16 @@ const FFScreen = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
-      <Text style={styles.heading}>Screen Lock Mode</Text>
-      <Text style={styles.subText}>Please enter the amount of time (in mins) you would like to lock your phone:</Text>
-      <View style={styles.timerContainer}>
-        {countdown > 0 ? (
-          <Text style={styles.timer}>{formatTime(countdown)}</Text>
-        ) : (
-          <TextInput
-            style={styles.input}
-            placeholder="Enter time in minutes"
-            value={time}
-            onChangeText={setTime}
-            keyboardType="numeric"
-            maxLength={2} // Limiting input to 2 digits
-            textAlign="center"
-            fontSize={48}
-            autoFocus // Automatically focus on input
-          />
-        )}
-      </View>
-      {countdown > 0 ? (
-        <TouchableOpacity style={styles.button} onPress={handleQuitCountdown}>
-          <Text style={styles.buttonText}>Quit</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={styles.button} onPress={handleStartCountdown}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
-      )}
+      <Text style={styles.heading}>Add Friends!</Text>
+      <TouchableOpacity style={styles.buttonGreen} onPress={addFriends}>
+        <Text style={styles.buttonText}>Make A Friend!</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.buttonGreen} onPress={removeFriends}>
+        <Text style={styles.buttonText}>Say Goodbye!</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.buttonGreen} onPress={handleGoToFriendRequests}>
+        <Text style={styles.buttonText}>Friend Requests</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -103,67 +39,41 @@ const FFScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#121212', // Dark background color for dark mode
     justifyContent: 'center',
     alignItems: 'center',
   },
+  heading: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    marginBottom: 24, // Move the heading down with more margin
+    color: '#FFF', // White text color for dark mode
+  },
   backButton: {
     position: 'absolute',
-    top: 16,
+    top: 40,
     left: 16,
     zIndex: 1,
   },
   backButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: '#BBB', // Light gray color for back button text in dark mode
   },
-  heading: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#FFF',
-  },
-  subText: {
-    fontSize: 16,
-    marginLeft: 16,   
-    marginRight: 16,
-    marginBottom: 32,
-    color: '#FFF',
-    textAlign: 'center',
-  },
-  timerContainer: {
-    marginBottom: 32,
-  },
-  timer: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
-  input: {
-    width: 200,
-    height: 80,
-    backgroundColor: '#000',
-    color: '#FFF',
-    fontSize: 48,
-    fontWeight: 'bold',
-    borderWidth: 0,
-    borderBottomWidth: 2,
-    borderBottomColor: '#FFF',
-    textAlign: 'center',
-    paddingBottom: 8,
-    marginBottom: 32,
-  },
-  button: {
+  buttonGreen: {
+    marginTop: 16,
     paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#00FF00',
+    paddingVertical: 12,
+    backgroundColor: '#006400', // Duller green color for buttons
     borderRadius: 8,
+    width: '40%', // Set a fixed width for the buttons
+    justifyContent: 'center', // Center the text inside the button
+    alignItems: 'center', // Center the text inside the button
   },
   buttonText: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#FFF', // White text color for buttons in dark mode
   },
 });
 

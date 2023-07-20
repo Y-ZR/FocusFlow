@@ -15,6 +15,9 @@ import FFScreen from './FFScreen';
 import SettingsScreen from './SettingsScreen';
 import ChangeUsernameScreen from './ChangeUsernameScreen';
 import ChangePasswordScreen from './ChangePasswordScreen';
+import AddFriendsScreen from './AddFriendsScreen';
+import RemoveFriendsScreen from './RemoveFriendsScreen';
+import FriendRequestScreen from './FriendRequestScreen';
 import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
 
 const Stack = createStackNavigator();
@@ -26,7 +29,12 @@ const createNewUserDocument = (userId, username) => {
   addDoc(userRef, {
     userId: userId,
     username: username,
-    coins: 0, // Initial coin balance
+    totalcoinsever: 0,
+    coins: 800, // Initial coin balance
+    mosttimeever: 0,
+    avatars: [],
+    friends:[],
+    requests: []
   });
 };
 
@@ -58,7 +66,7 @@ const LoginScreen = ({ navigation }) => {
         <View style={styles.formContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Username"
+            placeholder="Email"
             value={username}
             onChangeText={(text) => setUsername(text)}
             placeholderTextColor="#FFF"
@@ -131,7 +139,7 @@ const RegisterScreen = ({ navigation }) => {
 
 const HomeScreen = ({ navigation }) => {
   const [coinBalance, setCoinBalance] = useState(0);
-  const[username, setUsername] = useState('');
+  const [username, setUsername] = useState('');
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -169,7 +177,12 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Welcome, {username}.</Text>
+      {/* Welcome Box */}
+      <View style={styles.welcomeBox}>
+        <Text style={styles.welcomeText}>FocusFlow</Text>
+      </View>
+
+      <Text style={styles.homeHeading}>{username}</Text>
       <Text style={styles.text}>Coin Balance: {coinBalance}</Text>
       <View style={styles.iconContainer}>
         {/* Existing icons */}
@@ -208,13 +221,6 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.iconText}>Shop</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => handleNavigation('TimeTracker')} style={styles.iconButton}>
-          <View style={styles.iconWrapper}>
-            <AntDesign name="clockcircle" size={50} color="green" />
-          </View>
-          <Text style={styles.iconText}>Time Tracker</Text>
-        </TouchableOpacity>
-
         {/* New icon */}
         <TouchableOpacity onPress={() => handleNavigation('FocusFriends')} style={styles.iconButton}>
           <View style={styles.iconWrapper}>
@@ -243,6 +249,9 @@ const App = () => {
         <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen name="ChangeUsername" component={ChangeUsernameScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+        <Stack.Screen name="AddFriends" component = {AddFriendsScreen} />
+        <Stack.Screen name="RemoveFriends" component = {RemoveFriendsScreen} />
+        <Stack.Screen name="FriendRequests" component = {FriendRequestScreen} />
         {/* Add more screens here */}
       </Stack.Navigator>
     </NavigationContainer>
@@ -252,7 +261,7 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#121212', // Dark background color for dark mode
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -272,22 +281,30 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     borderWidth: 2,
-    borderColor: 'green',
+    borderColor: '#006400',
     borderRadius: 50,
     padding: 10,
+    shadowColor: 'white',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // This property adds a shadow for Android devices
   },
   iconText: {
     marginTop: 8,
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'grey',
+    color: 'white',
   },
   loginContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     width: '80%',
-    backgroundColor: '#000',
+    backgroundColor: '#121212',
     padding: 16,
     borderRadius: 8,
     borderWidth: 1,
@@ -296,13 +313,20 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#FFF',
+    marginBottom: 10, // Move the heading down with more margin
+    color: '#FFF', // White text color for dark mode
+  },
+  homeHeading: {
+    fontSize: 50,
+    fontWeight: 'bold',
+    marginBottom: 10, // Move the heading down with more margin
+    color: '#FFF', // White text color for dark mode
+    marginTop: -20
   },
   formContainer: {
     width: '100%',
     marginTop: 16,
-    backgroundColor: '#000',
+    backgroundColor: '#121212',
     padding: 16,
     borderRadius: 8,
   },
@@ -316,6 +340,19 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   text: {
+    marginBottom: 16,
+    color: '#FFF',
+  },
+  welcomeBox: {
+    backgroundColor: '#006400',
+    paddingHorizontal: 32,
+    paddingVertical:16,
+    borderRadius: 8,
+    marginBottom: 50,
+  },
+  welcomeText: {
+    fontSize: 30,
+    fontWeight: 'bold',
     color: '#FFF',
   },
 });

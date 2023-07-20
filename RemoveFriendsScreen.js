@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { collection, query, where, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
-import { db, auth } from './firebase';
+import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import { auth, db } from './firebase';
 
-const ChangeUsernameScreen = () => {
+const RemoveFriendsScreen = () => {
   const navigation = useNavigation();
-  const [newUsername, setNewUsername] = useState('');
-  const [username, setUsername] = useState('');
-  const [coins, setCoins] = useState(0);
+  const [userFriends, setUserFriends] = useState([]);
+  const [friendUsername, setFriendName] = useState('');
 
   useEffect(() => {
     // Fetch the user's data from Firestore
@@ -23,8 +22,7 @@ const ChangeUsernameScreen = () => {
           const userDocSnap = await getDoc(userDocRef);
           if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
-            setUsername(userData.username);
-            setCoins(userData.coins);
+            setUserFriends(userData.friends);
           }
         }
       } catch (error) {
@@ -35,48 +33,59 @@ const ChangeUsernameScreen = () => {
     fetchUserData();
   }, []);
 
-  const handleUsernameUpdate = async () => {
-    console.log(newUsername);
-
-    const checkExists = async (test) => {
-      try {
-        const userId = auth.currentUser?.uid; // Get the currently authenticated user's ID
-        const usersCollectionRef = collection(db, 'users');
-        const querySnapshot = await getDocs(query(usersCollectionRef, where('username', '==', test)));
   
-        if (!querySnapshot.empty) {
-          return true;
-        } else {
-          return false;
-        }
-      } catch (error) {
-        console.log('Error:', error);
+  const checkExists = async (test) => {
+    try {
+      const userId = auth.currentUser?.uid; // Get the currently authenticated user's ID
+      const usersCollectionRef = collection(db, 'users');
+      const querySnapshot = await getDocs(query(usersCollectionRef, where('username', '==', test)));
+
+      if (!querySnapshot.empty) {
+        return true;
+      } else {
+        return false;
       }
-    };
+    } catch (error) {
+      console.log('Error:', error);
+    }
+  };
 
-    const userExists = await checkExists(newUsername);
 
-    if (userExists) {
-      Alert.alert("Username is Taken!");
-    } else {
+  const handleAddFriend = async () => {
+    const updateFriends = async (ava) => {
       try {
         const userId = auth.currentUser?.uid; // Get the currently authenticated user's ID
         const usersCollectionRef = collection(db, 'users');
         const querySnapshot = await getDocs(query(usersCollectionRef, where('userId', '==', userId)));
-
+  
         if (!querySnapshot.empty) {
           const documentSnapshot = querySnapshot.docs[0];
           const userDocRef = doc(db, 'users', documentSnapshot.id);
-
-          await updateDoc(userDocRef, { username: newUsername });
-          console.log('Username updated successfully.');
-          Alert.alert('Success', 'Username updated successfully');
-          setNewUsername('');
-          navigation.goBack();
+          const userDocSnap = await getDoc(userDocRef);
+  
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            const currentFriends = userData.friends || [];
+            const newFriend = currentFriends.filter((friend) => friend !== friendUsername);
+            console.log(userDocRef);
+            await updateDoc(userDocRef, { friends:newFriend });
+          }
         }
       } catch (error) {
-        console.log('Error updating username:', error);
+        console.error('Error updating Friends:', error);
       }
+    };
+  
+    const userExists = await checkExists(friendUsername);
+
+    if (!userExists) {
+      Alert.alert('Error', 'User does not exist!');
+    } else if (!userFriends.includes(friendUsername)) {
+      Alert.alert('Error', 'You have gotten rid of this toxic man!');
+    } else {
+      updateFriends(friendUsername);     
+      Alert.alert('Success', 'What a baller!');
+      navigation.goBack();
     }
   };
 
@@ -86,25 +95,24 @@ const ChangeUsernameScreen = () => {
 
   const handleChange = (event) => {
     const { text } = event.nativeEvent;
-    setNewUsername(text);
-    console.log('New username:', text);
+    setFriendName(text);
   };
+
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
-      <Text style={styles.heading}>Change Username</Text>
-      <Text style={styles.username}>Current username: {username}</Text>
+      <Text style={styles.heading}>Remove a Friend...</Text>
       <TextInput
         style={styles.input}
-        placeholder="New Username"
+        placeholder="Friend's Username"
         onChange={handleChange}
-        value={newUsername}
+        value={friendUsername}
       />
-      <TouchableOpacity style={styles.buttonGreen} onPress={handleUsernameUpdate}>
-        <Text style={styles.buttonText}>Update Username</Text>
+      <TouchableOpacity style={styles.buttonGreen} onPress={handleAddFriend}>
+        <Text style={styles.buttonText}>Remove</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
         <Text style={styles.buttonText}>Cancel</Text>
@@ -116,7 +124,7 @@ const ChangeUsernameScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
+    backgroundColor: '#121212', // Dark background color for dark mode
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -124,7 +132,7 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
     marginBottom: 16,
-    color: '#FFF',
+    color: '#FFF', // White text color for dark mode
   },
   backButton: {
     position: 'absolute',
@@ -137,13 +145,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#BBB', // Light gray color for back button text in dark mode
   },
-  username: {
-    fontSize: 24,
-    color: 'white',
-    marginBottom: 10
-  },
   input: {
-    width: '50%',
+    width: '45%',
     height: 40,
     backgroundColor: '#FFF',
     borderRadius: 8,
@@ -157,7 +160,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#006400', // Duller green color for buttons
     borderRadius: 8,
-    width: '42%', // Set a fixed width for the buttons
+    width: '24%', // Set a fixed width for the buttons
     justifyContent: 'center', // Center the text inside the button
     alignItems: 'center', // Center the text inside the button
   },
@@ -167,7 +170,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#006400', // Duller green color for buttons
     borderRadius: 8,
-    width: '22%', // Set a fixed width for the buttons
+    width: '23%', // Set a fixed width for the buttons
     justifyContent: 'center', // Center the text inside the button
     alignItems: 'center', // Center the text inside the button
   },
@@ -178,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ChangeUsernameScreen;
+export default RemoveFriendsScreen;

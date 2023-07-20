@@ -1,101 +1,122 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import { auth, db } from './firebase';
 
 const LeaderboardScreen = () => {
-  const [time, setTime] = useState('');
-  const [countdown, setCountdown] = useState(0);
   const navigation = useNavigation();
-  let mvar = 0;
-  let coinsEarned = 0;
+  const [userFriends, setUserFriends] = useState([]);
+  const [friendUsername, setFriendName] = useState('');
+  const RetrieveData = [
+    { username: 'Go Touch Grass & Make Friends!', coins: 0 },
+    { username: 'Go Touch Grass & Make Friends!', coins: 0 },
+    { username: 'Go Touch Grass & Make Friends!', coins: 0 },
+    { username: 'Go Touch Grass & Make Friends!', coins: 0 },
+    { username: 'Go Touch Grass & Make Friends!', coins: 0 },
+  ];
 
-  const handleTimerEnd = () => {
-    Alert.alert('Congratulations', 'You earned ' + coinsEarned + ' coins!', [
-      { text: 'Return to Timer', onPress: () => navigation.goBack() },
-    ]);
-
-  };
-  
   useEffect(() => {
-    let timer;
-    if (countdown > 0) {
-      timer = setInterval(() => {
-        setCountdown((prevCountdown) => prevCountdown - 1);
-      }, 1000);
+    // Fetch the user's data from Firestore
+    const fetchUserData = async () => {
+      try {
+        const userId = auth.currentUser?.uid; // Get the currently authenticated user's ID
+        const usersCollectionRef = collection(db, 'users');
+        const querySnapshot = await getDocs(query(usersCollectionRef, where('userId', '==', userId)));
+        if (!querySnapshot.empty) {
+          const documentSnapshot = querySnapshot.docs[0];
+          const userDocRef = doc(db, 'users', documentSnapshot.id);
+          const userDocSnap = await getDoc(userDocRef);
+          if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            setUserFriends(userData.friends);
+          }
+        }
+      } catch (error) {
+        console.log('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const fetchUserFriendData = async (fri) => {
+    try {
+      const userFriendData = await Promise.all(
+        fri.map(async (friendUsername) => {
+          try {
+            const usersCollectionRef = collection(db, 'users');
+            const querySnapshot = await getDocs(query(usersCollectionRef, where('username', '==', friendUsername)));
   
-      return () => {
-        clearInterval(timer);
-      };
-    } else if (countdown === 0) {
-      if (mvar == 1) {
-          handleTimerEnd();
-          mvar = 0;
-      } 
+            if (!querySnapshot.empty) {
+              const friendData = querySnapshot.docs[0].data();
+              const totalCoinsEarned = friendData.totalcoinsearned || 0; 
+              return { username: friendUsername, totalCoinsEarned };
+            } else {
+              return { username: friendUsername, totalCoinsEarned: 0 };
+            }
+          } catch (error) {
+            console.log('Error fetching friend data:', error);
+            return { username: friendUsername, totalCoinsEarned: 0 };
+          }
+        })
+      );
+  
+      // Sort the userFriendData array in descending order
+      userFriendData.sort((a, b) => b.totalCoinsEarned - a.totalCoinsEarned);
+      return userFriendData;
+    } catch (error) {
+      console.log('Error fetching user friend data:', error);
+      return [];
     }
-  }, [countdown]);
+  };
 
-  const handleStartCountdown = () => {
-    const parsedTime = parseInt(time);
-    if (isNaN(parsedTime) || parsedTime <= 0) {
-      Alert.alert('Invalid Time', 'Please enter a valid time in minutes.');
-      return;
+  const [getArrayFriends, setGetArrayFriends] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const friendData = await fetchUserFriendData(userFriends);
+      setGetArrayFriends(friendData);
+    };
+
+    fetchData();
+  }, [userFriends]);
+
+  const mergeArrays = (getArrayFriends, RetrieveData) => {
+    const mergedArray = [...RetrieveData];
+  
+    // Determine how many elements to replace in RetrieveData
+    const numElementsToReplace = Math.min(getArrayFriends.length, RetrieveData.length);
+  
+    // Replace the corresponding elements in RetrieveData
+    for (let i = 0; i < numElementsToReplace; i++) {
+      mergedArray[i].username = getArrayFriends[i].username;
+      mergedArray[i].coins = getArrayFriends[i].totalCoinsEarned;
     }
-    coinsEarned += parsedTime;
-    mvar = 1;
-    setTime('');
-    setCountdown(parsedTime * 60);  
+  
+    return mergedArray;
   };
 
-  const handleQuitCountdown = () => {
-    Alert.alert(
-      'Quit Screen Lock Mode',
-      'Are you sure you want to quit the Screen Lock Mode? You will not earn any coins!',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Quit', style: 'destructive', onPress: () => navigation.goBack() },
-      ]
-    );
-  };
-
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
-  };
+  const SampleData = mergeArrays(getArrayFriends, RetrieveData);
 
   return (
     <View style={styles.container}>
+      <View style={styles.podiumContainer}>
+         <Image source={require('./assets/ORBIMG9.png')} style={styles.podiumImage} />
+      </View>
+
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
-      <Text style={styles.heading}>Screen Lock Mode</Text>
-      <Text style={styles.subText}>Please enter the amount of time (in mins) you would like to lock your phone:</Text>
-      <View style={styles.timerContainer}>
-        {countdown > 0 ? (
-          <Text style={styles.timer}>{formatTime(countdown)}</Text>
-        ) : (
-          <TextInput
-            style={styles.input}
-            placeholder="Enter time in minutes"
-            value={time}
-            onChangeText={setTime}
-            keyboardType="numeric"
-            maxLength={2} // Limiting input to 2 digits
-            textAlign="center"
-            fontSize={48}
-            autoFocus // Automatically focus on input
-          />
-        )}
+
+      <View style={styles.leaderboardContainer}>
+        {SampleData.map((user, index) => (
+          <View key={index} style={styles.leaderboardBox}>
+            <Text style={styles.username}>{user.username}</Text>
+            <Text style={styles.coinAmount}>{user.coins} coins</Text>
+          </View>
+        ))}
       </View>
-      {countdown > 0 ? (
-        <TouchableOpacity style={styles.button} onPress={handleQuitCountdown}>
-          <Text style={styles.buttonText}>Quit</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={styles.button} onPress={handleStartCountdown}>
-          <Text style={styles.buttonText}>Start</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 };
@@ -104,12 +125,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 16,
   },
   backButton: {
     position: 'absolute',
-    top: 16,
+    top: 60,
     left: 16,
     zIndex: 1,
   },
@@ -118,52 +138,37 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFF',
   },
-  heading: {
-    fontSize: 32,
+  podiumContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  podiumImage: {
+    width: 150, 
+    height: 150,
+    resizeMode: 'contain',
+  },
+  leaderboardContainer: {
+    flex: 1,
+    marginTop: -150,
+    alignItems: 'center',
+  },
+  leaderboardBox: {
+    width: '80%',
+    padding: 16,
+    marginVertical: 8,
+    borderRadius: 12,
+    backgroundColor: '#222',
+    alignItems: 'center',
+  },
+  username: {
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 16,
     color: '#FFF',
   },
-  subText: {
+  coinAmount: {
     fontSize: 16,
-    marginLeft: 16,   
-    marginRight: 16,
-    marginBottom: 32,
-    color: '#FFF',
-    textAlign: 'center',
-  },
-  timerContainer: {
-    marginBottom: 32,
-  },
-  timer: {
-    fontSize: 48,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
-  input: {
-    width: 200,
-    height: 80,
-    backgroundColor: '#000',
-    color: '#FFF',
-    fontSize: 48,
-    fontWeight: 'bold',
-    borderWidth: 0,
-    borderBottomWidth: 2,
-    borderBottomColor: '#FFF',
-    textAlign: 'center',
-    paddingBottom: 8,
-    marginBottom: 32,
-  },
-  button: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#00FF00',
-    borderRadius: 8,
-  },
-  buttonText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000',
+    color: '#BBB',
   },
 });
 
