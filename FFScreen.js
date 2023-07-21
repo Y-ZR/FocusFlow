@@ -5,6 +5,10 @@ import { useNavigation } from '@react-navigation/native';
 const FFScreen = () => {
   const navigation = useNavigation();
 
+  const goToFriendList = () => {
+    navigation.navigate('FriendList'); // Navigate to FriendList page
+  };
+
   const addFriends = () => {
     navigation.navigate('AddFriends'); // Navigate to AddFriends page
   };
@@ -23,6 +27,9 @@ const FFScreen = () => {
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
       <Text style={styles.heading}>Add Friends!</Text>
+      <TouchableOpacity style={styles.buttonGreen} onPress={goToFriendList}>
+        <Text style={styles.buttonText}>Friend List</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.buttonGreen} onPress={addFriends}>
         <Text style={styles.buttonText}>Make A Friend!</Text>
       </TouchableOpacity>

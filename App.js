@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import app from './firebase';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { Alert, View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, LogBox } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
@@ -18,16 +18,20 @@ import ChangePasswordScreen from './ChangePasswordScreen';
 import AddFriendsScreen from './AddFriendsScreen';
 import RemoveFriendsScreen from './RemoveFriendsScreen';
 import FriendRequestScreen from './FriendRequestScreen';
-import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where } from 'firebase/firestore';
+import FriendListScreen from './FriendListScreen';
+import OwnedAvatarScreen from './OwnedAvatarScreen';
+import { getFirestore, collection, addDoc, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 
 const Stack = createStackNavigator();
 const auth = getAuth(app);
 const db = getFirestore(app);
+LogBox.ignoreLogs(['Warning: Internal React error: Attempted to capture a commit phase error inside a detached tree. This indicates a bug in React. Likely causes include deleting the same fiber more than once, committing an already-finished tree, or an inconsistent return pointer.',]);
 
-const createNewUserDocument = (userId, username) => {
+const createNewUserDocument = (userId, email, username) => {
   const userRef = collection(db, 'users');
   addDoc(userRef, {
     userId: userId,
+    email: email,
     username: username,
     totalcoinsever: 0,
     coins: 800, // Initial coin balance
@@ -39,11 +43,45 @@ const createNewUserDocument = (userId, username) => {
 };
 
 const LoginScreen = ({ navigation }) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const handleInvalidEmail = () => {
+    Alert.alert('Email is invalid!', 'Please enter a valid email address.');
+  };
+
+  const handleWrongPassword = () => {
+    Alert.alert('Password is wrong!', 'Please check your password and try again.');
+  };
+
+  const handleNotRegistered = () => {
+    Alert.alert('Please register an account!', 'This email is not associated with any user account.');
+  };
+
+  const handleEmptyEmail = () => {
+    Alert.alert('Please fill in your email!', 'Email field cannot be empty.');
+  };
+
+  const handleEmptyPassword = () => {
+    Alert.alert('Please fill in your password!', 'Password field cannot be empty.');
+  };
+
+  const handleEmptyFields = () => {
+    Alert.alert('Bro please la', 'Please fill in both email and password fields.');
+  };
+
   const handleLogin = () => {
-    signInWithEmailAndPassword(auth, username, password)
+    if (!email) {
+      handleEmptyEmail();
+      return;
+    }
+
+    if (!password) {
+      handleEmptyPassword();
+      return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Login successful
         const user = userCredential.user;
@@ -52,7 +90,19 @@ const LoginScreen = ({ navigation }) => {
       })
       .catch((error) => {
         // Handle login error
-        console.log('Login failed:', error);
+        switch (error.code) {
+          case 'auth/invalid-email':
+            handleInvalidEmail();
+            break;
+          case 'auth/wrong-password':
+            handleWrongPassword();
+            break;
+          case 'auth/user-not-found':
+            handleNotRegistered();
+            break;
+          default:
+            console.log('Login failed:', error);
+        }
       });
   };
 
@@ -67,8 +117,8 @@ const LoginScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Email"
-            value={username}
-            onChangeText={(text) => setUsername(text)}
+            value={email}
+            onChangeText={(text) => setEmail(text)}
             placeholderTextColor="#FFF"
           />
           <TextInput
@@ -91,21 +141,85 @@ const LoginScreen = ({ navigation }) => {
 };
 
 const RegisterScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = () => {
-    createUserWithEmailAndPassword(auth, username, password)
+  const handleInvalidEmail = () => {
+    Alert.alert('Email is invalid!', 'Please enter a valid email address.');
+  };
+
+  const handleEmailTaken = () => {
+    Alert.alert('Email is taken!', 'Please choose a different email.');
+  };
+
+  const handleEmptyEmail = () => {
+    Alert.alert('Please fill in a valid email!', 'Email field cannot be empty.');
+  };
+
+  const handleEmptyUsername = () => {
+    Alert.alert('Please fill in a username!', 'Username field cannot be empty.');
+  };
+
+  const handleEmptyPassword = () => {
+    Alert.alert('Please fill in your password!', 'Password field cannot be empty.');
+  };
+
+  const handleUsernameTaken = () => {
+    Alert.alert('Username is taken!', 'Please choose a different username.');
+  };
+
+  const handleRegister = async () => {
+    if (!email) {
+      handleEmptyEmail();
+      return;
+    }
+
+    if (!username) {
+      handleEmptyUsername();
+      return;
+    }
+
+    if (!password) {
+      handleEmptyPassword();
+      return;
+    }
+
+    try {
+      const userCollectionRef = collection(db, 'users');
+      const usernameQuery = query(userCollectionRef, where('username', '==', username));
+      const usernameQuerySnapshot = await getDocs(usernameQuery);
+  
+      if (!usernameQuerySnapshot.empty) {
+        // Username already exists
+        handleUsernameTaken();
+        return;
+      }
+    } catch (error) {
+      console.error('Error checking username:', error);
+      return;
+    }
+
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // User registration successful
         const user = userCredential.user;
         console.log('User registered:', user);
-        createNewUserDocument(user.uid, username); // Create user document in Firestore
+        createNewUserDocument(user.uid, email, username); // Create user document in Firestore
         navigation.goBack();
       })
       .catch((error) => {
         // Handle registration error
-        console.log('Registration failed:', error);
+        switch (error.code) {
+          case 'auth/invalid-email':
+            handleInvalidEmail();
+            break;
+          case 'auth/email-already-in-use':
+            handleEmailTaken();
+            break;
+          default:
+            console.log('Registration failed:', error);
+        }
       });
   };
 
@@ -114,6 +228,13 @@ const RegisterScreen = ({ navigation }) => {
       <View style={styles.loginContainer}>
         <Text style={styles.heading}>Register</Text>
         <View style={styles.formContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            placeholderTextColor="#FFF"
+          />
           <TextInput
             style={styles.input}
             placeholder="Username"
@@ -171,6 +292,14 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const handleLogout = () => {
+    // Implement the logout functionality here
+    // For example, you can sign out the user using the Firebase auth API
+    // Logout successful
+    console.log('User logged out successfully.');
+    navigation.navigate('Login'); // Navigate to the Login screen after logout
+  };
+
   const handleNavigation = (screenName) => {
     navigation.navigate(screenName);
   };
@@ -221,12 +350,18 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.iconText}>Shop</Text>
         </TouchableOpacity>
 
-        {/* New icon */}
         <TouchableOpacity onPress={() => handleNavigation('FocusFriends')} style={styles.iconButton}>
           <View style={styles.iconWrapper}>
             <Icon name="people" size={50} color="green" />
           </View>
           <Text style={styles.iconText}>Focus Friends</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleLogout} style={styles.iconButton}>
+          <View style={styles.iconWrapper}>
+            <AntDesign name="logout" size={50} color="green" />
+          </View>
+          <Text style={styles.iconText}>Logout</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -252,6 +387,8 @@ const App = () => {
         <Stack.Screen name="AddFriends" component = {AddFriendsScreen} />
         <Stack.Screen name="RemoveFriends" component = {RemoveFriendsScreen} />
         <Stack.Screen name="FriendRequests" component = {FriendRequestScreen} />
+        <Stack.Screen name="FriendList" component = {FriendListScreen} />
+        <Stack.Screen name="OwnedAvatar" component = {OwnedAvatarScreen} />
         {/* Add more screens here */}
       </Stack.Navigator>
     </NavigationContainer>

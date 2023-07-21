@@ -69,8 +69,12 @@ const AddFriendsScreen = () => {
             const recipientData = recipientDocSnap.data();
             const currentRequests = recipientData.requests || [];
 
-            const newRequests = [...currentRequests, username];
-            await updateDoc(recipientDocRef, { requests: newRequests });
+            if (currentRequests.includes(username)) {
+              Alert.alert('Error', 'You have already sent a request to this user!');
+            } else {
+              const newRequests = [...currentRequests, username];
+              await updateDoc(recipientDocRef, { requests: newRequests });
+            }
           }
         }
       } catch (error) {

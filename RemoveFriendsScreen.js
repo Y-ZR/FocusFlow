@@ -6,6 +6,7 @@ import { auth, db } from './firebase';
 
 const RemoveFriendsScreen = () => {
   const navigation = useNavigation();
+  const [username, setUsername] = useState('');
   const [userFriends, setUserFriends] = useState([]);
   const [friendUsername, setFriendName] = useState('');
 
@@ -22,6 +23,7 @@ const RemoveFriendsScreen = () => {
           const userDocSnap = await getDoc(userDocRef);
           if (userDocSnap.exists()) {
             const userData = userDocSnap.data();
+            setUsername(userData.username);
             setUserFriends(userData.friends);
           }
         }
@@ -67,10 +69,28 @@ const RemoveFriendsScreen = () => {
             const userData = userDocSnap.data();
             const currentFriends = userData.friends || [];
             const newFriend = currentFriends.filter((friend) => friend !== friendUsername);
-            console.log(userDocRef);
             await updateDoc(userDocRef, { friends:newFriend });
           }
         }
+
+
+        const friendQuerySnapshot = await getDocs(query(usersCollectionRef, where('username', '==', friendUsername)));
+
+        if (!friendQuerySnapshot.empty) {
+          const friendDocumentSnapshot = friendQuerySnapshot.docs[0];
+          const friendDocRef = doc(db, 'users', friendDocumentSnapshot.id);
+          const friendDocSnap = await getDoc(friendDocRef);
+  
+          if (friendDocSnap.exists()) {
+            const friendData = friendDocSnap.data();
+            const currentFriends = friendData.friends || []; 
+            const newFriend = currentFriends.filter((friend) => friend !== username);
+            await updateDoc(friendDocRef, { friends:newFriend });
+          }
+        }
+  
+
+
       } catch (error) {
         console.error('Error updating Friends:', error);
       }

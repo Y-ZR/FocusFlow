@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Alert, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
@@ -129,10 +129,10 @@ const ShopScreen = () => {
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
       <View style={styles.headerContainer}>
-        <Text style={styles.heading}>Shop</Text>
-        <Text style={styles.coinBalance}>Current Coins: {coinBalance}</Text>
+        <Text style={styles.heading}>SHOP</Text>
+        <Text style={styles.coinBalance}>Coins: {coinBalance}</Text>
       </View>
-      <View style={styles.gridContainer}>
+      <ScrollView contentContainerStyle={styles.gridContainer}>
         <View style={styles.row}>
           <View style={styles.itemContainer}>
             <Image source={require('./assets/ORBIMG1.jpg')} style={styles.image} />
@@ -145,7 +145,7 @@ const ShopScreen = () => {
                 style={styles.buyButton}
                 onPress={() => handleBuy(1, 100, 'ORBIMG1')}
               >
-                <Text style={styles.buyButtonText}>BUY: 100 coins</Text>
+                <Text style={styles.buyButtonText}>100 coins</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -160,7 +160,7 @@ const ShopScreen = () => {
                 style={styles.buyButton}
                 onPress={() => handleBuy(2, 200, 'ORBIMG2')}
               >
-                <Text style={styles.buyButtonText}>BUY: 200 coins</Text>
+                <Text style={styles.buyButtonText}>200 coins</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -177,7 +177,7 @@ const ShopScreen = () => {
                 style={styles.buyButton}
                 onPress={() => handleBuy(3, 300, 'ORBIMG3')}
               >
-                <Text style={styles.buyButtonText}>BUY: 300 coins</Text>
+                <Text style={styles.buyButtonText}>300 coins</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -192,7 +192,7 @@ const ShopScreen = () => {
                 style={styles.buyButton}
                 onPress={() => handleBuy(4, 400, 'ORBIMG4')}
               >
-                <Text style={styles.buyButtonText}>BUY: 400 coins</Text>
+                <Text style={styles.buyButtonText}>400 coins</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -209,7 +209,7 @@ const ShopScreen = () => {
                 style={styles.buyButton}
                 onPress={() => handleBuy(5, 500, 'ORBIMG5')}
               >
-                <Text style={styles.buyButtonText}>BUY: 500 coins</Text>
+                <Text style={styles.buyButtonText}>500 coins</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -224,7 +224,7 @@ const ShopScreen = () => {
                 style={styles.buyButton}
                 onPress={() => handleBuy(6, 600, 'ORBIMG6')}
               >
-                <Text style={styles.buyButtonText}>BUY: 600 coins</Text>
+                <Text style={styles.buyButtonText}>600 coins</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -241,7 +241,7 @@ const ShopScreen = () => {
                 style={styles.buyButton}
                 onPress={() => handleBuy(7, 700, 'ORBIMG7')}
               >
-                <Text style={styles.buyButtonText}>BUY: 700 coins</Text>
+                <Text style={styles.buyButtonText}>700 coins</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -256,12 +256,12 @@ const ShopScreen = () => {
                 style={styles.buyButton}
                 onPress={() => handleBuy(8, 800, 'ORBIMG8')}
               >
-                <Text style={styles.buyButtonText}>BUY: 800 coins</Text>
+                <Text style={styles.buyButtonText}>800 coins</Text>
               </TouchableOpacity>
             )}
           </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -271,7 +271,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#121212',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   backButton: {
     position: 'absolute',
@@ -287,7 +286,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 60,
     marginBottom: 24,
   },
   heading: {
@@ -302,18 +301,19 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   gridContainer: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingBottom: 20,
   },
   row: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
   },
   itemContainer: {
     alignItems: 'center',
-    marginHorizontal: 10,
-    marginBottom: 20,
+    width: '48%',
   },
   image: {
     width: 100,
@@ -321,19 +321,17 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   buyButton: {
-    marginTop: 16,
+    marginTop: 8,
     paddingHorizontal: 16,
-    paddingVertical: 5,
-    backgroundColor: '#006400', // Duller green color for buttons
+    paddingVertical: 8,
+    backgroundColor: '#006400',
     borderRadius: 8,
-    width: '100%', // Set a fixed width for the buttons
-    justifyContent: 'center', // Center the text inside the button
-    alignItems: 'center', // Center the text inside the button
+    width: '57%',
   },
   buyButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFF', // White text color for buttons in dark mode
+    color: '#FFF',
   },
   ownedButton: {
     marginTop: 8,
@@ -341,6 +339,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: '#888',
     borderRadius: 8,
+    width: '58%',
   },
   ownedButtonText: {
     fontSize: 14,

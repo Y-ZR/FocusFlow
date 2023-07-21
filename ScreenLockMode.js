@@ -163,7 +163,7 @@ const ScreenLockScreen = () => {
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.heading}>Lock you phone!</Text>
+      <Text style={styles.heading}>Lock your phone!</Text>
       <Text style={styles.subText}>Please enter the amount of time (in mins) to lock your phone for:</Text>
       <View style={styles.timerContainer}>
         {countdown > 0 ? (

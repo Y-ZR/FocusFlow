@@ -42,7 +42,7 @@ const ProfileScreen = () => {
   }, []);
 
   const handleAvatarsUnlocked = () => {
-    navigation.navigate('Screen4');
+    navigation.navigate('OwnedAvatar');
     // CREATE A PAGE OF ALL AVATARS COLLECTED
     // REPLACE THE LIU ZHENGYANG TEXT WITH A FIREBASE-STORED USERNAME
   };
