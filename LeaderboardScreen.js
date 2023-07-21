@@ -11,40 +11,48 @@ const LeaderboardScreen = () => {
   const navigation = useNavigation();
   const [userFriends, setUserFriends] = useState([]);
   const [getArrayFriends, setGetArrayFriends] = useState([]);
+  const [userData, setUserData] = useState(null);
   const maxSlots = 5;
 
   useEffect(() => {
-    // Fetch the user's data from Firestore
-    const fetchUserData = async () => {
+    // Fetch the user's data and friends' data from Firestore
+    const fetchData = async () => {
       try {
-        const userId = auth.currentUser?.uid; // Get the currently authenticated user's ID
+        const userId = auth.currentUser?.uid;
         const usersCollectionRef = collection(db, 'users');
         const querySnapshot = await getDocs(query(usersCollectionRef, where('userId', '==', userId)));
+
         if (!querySnapshot.empty) {
           const documentSnapshot = querySnapshot.docs[0];
+          const userData = documentSnapshot.data();
+          setUserData(userData);
+          setUserFriends(userData.friends);
+
+          // Fetch and set friend data
+          const friendData = await fetchUserFriendData(userData.friends);
+          setGetArrayFriends(friendData);
+
+          // Set up real-time listener for user's friends
           const userDocRef = doc(db, 'users', documentSnapshot.id);
-          const userDocSnap = await getDoc(userDocRef);
-          if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
+          const userFriendsListener = onSnapshot(userDocRef, async (docSnapshot) => {
+            const userData = docSnapshot.data();
+            setUserData(userData);
             setUserFriends(userData.friends);
+            const updatedFriendData = await fetchUserFriendData(userData.friends);
+            setGetArrayFriends(updatedFriendData);
+          });
 
-            // Set up real-time listener for user's friends
-            const userFriendsListener = onSnapshot(userDocRef, (docSnapshot) => {
-              const userData = docSnapshot.data();
-              setUserFriends(userData.friends);
-            });
-
-            // Clean up the listener when the component unmounts
-            return () => userFriendsListener();
-          }
+          // Clean up the listener when the component unmounts
+          return () => userFriendsListener();
         }
       } catch (error) {
         console.log('Error fetching user data:', error);
       }
     };
 
-    fetchUserData();
+    fetchData();
   }, []);
+
 
   const fetchUserFriendData = async (fri) => {
     try {
@@ -77,15 +85,6 @@ const LeaderboardScreen = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const friendData = await fetchUserFriendData(userFriends);
-      setGetArrayFriends(friendData);
-    };
-
-    fetchData();
-  }, [userFriends]);
-
   const renderFriendSlot = ({ item }) => (
     <View style={[styles.friendSlot, { width: friendSlotWidth }]}>
       <View style={styles.friendContent}>
@@ -102,6 +101,23 @@ const LeaderboardScreen = () => {
     navigation.navigate('AddFriends');
   };
 
+  const renderUserSlot = () => {
+    if (!userData || !userData.username || !userData.totalcoinsever) {
+      return null;
+    }
+
+    return (
+      <View style={[styles.friendSlot, { width: friendSlotWidth }]}>
+        <View style={styles.friendContent}>
+          <Text style={styles.friendUsername}>{userData.username}</Text>
+        </View>
+        <View style={styles.friendContent}>
+          <Text style={styles.friendCoins}>{userData.totalcoinsever} coins</Text>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -116,25 +132,27 @@ const LeaderboardScreen = () => {
         </View>
       </View>
 
-      {getArrayFriends.length > 0 ? (
-        <FlatList
-          data={getArrayFriends.slice(0, maxSlots)}
-          renderItem={renderFriendSlot}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={[styles.leaderboardContainer, { marginTop: friendSlotWidth / 2 - 32 }]}
-        />
-      ) : (
+      {userFriends.length === 0 ? (
+        // Only show the user's slot, text, and button when there are no friends
         <View style={styles.leaderboardContainer}>
+          {renderUserSlot()}
           <Text style={styles.noFriendsText}>Sadly, you have no friends.</Text>
           <TouchableOpacity style={styles.touchGrassButton} onPress={handleTouchGrassPress}>
             <Text style={styles.touchGrassButtonText}>Touch Grass</Text>
           </TouchableOpacity>
         </View>
+      ) : (
+        // Show the FlatList with all friends' data, including the user's data
+        <FlatList
+          data={[userData, ...getArrayFriends]}
+          renderItem={renderFriendSlot}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={[styles.leaderboardContainer, { marginTop: friendSlotWidth / 2 - 32 }]}
+        />
       )}
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
