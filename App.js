@@ -308,10 +308,7 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       {/* Welcome Box */}
-      <View style={styles.welcomeBox}>
-        <Text style={styles.welcomeText}>FocusFlow</Text>
-      </View>
-
+      <Image source={require('./assets/FF-Home.png')} style={styles.image} />
       <Text style={styles.homeHeading}>{username}</Text>
       <Text style={styles.text}>Coin Balance: {coinBalance}</Text>
       <View style={styles.iconContainer}>
@@ -402,6 +399,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#121212', // Dark background color for dark mode
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  image: {
+    width: 350,
+    height: 350,
+    resizeMode: 'contain',
+    marginBottom: -90,
+    marginTop: -80,
   },
   icon: {
     width: 250,
