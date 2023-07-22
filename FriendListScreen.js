@@ -47,6 +47,7 @@ const FriendListScreen = () => {
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
       <Text style={styles.heading}>My Friends</Text>
+      <Text style={styles.subText}>Here are your friends:</Text>
       {friends.length === 0 ? (
         <Text style={styles.emptyText}>You have no friends yet :(</Text>
       ) : (
@@ -75,10 +76,16 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 15,
     color: '#FFF', // White text color for dark mode
     textAlign: 'center',
-    marginTop: 40
+    marginTop: 40,
+  },
+  subText: {
+    fontSize: 18,
+    color: '#BBB', // Light gray color for subtext in dark mode
+    textAlign: 'center',
+    marginBottom: 20,
   },
   backButton: {
     position: 'absolute',
@@ -100,6 +107,7 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
     width: '80%',
+    alignSelf: 'center', // Centralise the friend list
   },
   friendUsername: {
     fontSize: 18,

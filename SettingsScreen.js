@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -35,7 +35,9 @@ const SettingsScreen = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
+      <Image source={require('./assets/ORBIMG11.png')} style={styles.icon} />
       <Text style={styles.heading}>Settings</Text>
+      <Text style={styles.subText}>Customize the app to your liking here.</Text> 
       <TouchableOpacity style={styles.buttonGreen} onPress={handleUsernameChange}>
         <Text style={styles.buttonText}>Change Username</Text>
       </TouchableOpacity>
@@ -56,11 +58,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  icon: {
+    width: 120,
+    height: 120,
+    resizeMode: 'contain',
+    marginBottom: 15,
+  },
   heading: {
     fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 24, // Move the heading down with more margin
+    marginBottom: 5, // Move the heading down with more margin
     color: '#FFF', // White text color for dark mode
+  },
+  subText: {
+    fontSize: 16,
+    color: '#BBB', // Light gray color for subtext in dark mode
+    marginBottom: 10,
   },
   backButton: {
     position: 'absolute',

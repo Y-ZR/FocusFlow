@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const FFScreen = () => {
@@ -26,7 +26,9 @@ const FFScreen = () => {
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
-      <Text style={styles.heading}>Add Friends!</Text>
+      <Image source={require('./assets/ORBIMG13.png')} style={styles.icon} />
+      <Text style={styles.heading}>Focus Friends</Text>
+      <Text style={styles.subText}>Connect with like-minded individuals.</Text>
       <TouchableOpacity style={styles.buttonGreen} onPress={goToFriendList}>
         <Text style={styles.buttonText}>Friend List</Text>
       </TouchableOpacity>
@@ -53,8 +55,18 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 24, // Move the heading down with more margin
     color: '#FFF', // White text color for dark mode
+  },
+  subText: {
+    fontSize: 16,
+    color: '#BBB', // Light gray color for subtext in dark mode
+    marginBottom: 10, 
+  },
+  icon: {
+    width: 230, // Adjust the width and height as needed
+    height: 230,
+    resizeMode: 'contain',
+    marginBottom: -60, 
   },
   backButton: {
     position: 'absolute',

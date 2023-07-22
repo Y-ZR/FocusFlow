@@ -129,8 +129,10 @@ const ShopScreen = () => {
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
       <View style={styles.headerContainer}>
-        <Text style={styles.heading}>SHOP</Text>
-        <Text style={styles.coinBalance}>Coins: {coinBalance}</Text>
+        <Image source={require('./assets/ORBIMG12.png')} style={styles.icon} />
+        <Text style={styles.heading}>Shop</Text>
+        <Text style={styles.subText}>Time to splurge!</Text>
+        <Text style={styles.coinBalance}>Coins Available: {coinBalance}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.gridContainer}>
         <View style={styles.row}>
@@ -283,6 +285,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#BBB', // Light gray color for back button text in dark mode
   },
+  icon: {
+    width: 130, // Adjust the width and height as needed
+    height: 130,
+    resizeMode: 'contain',
+    marginTop: 10
+  },
   headerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -290,15 +298,21 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   heading: {
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: 'bold',
     color: '#FFF',
+    marginBottom: -15
+  },
+  subText: {
+    fontSize: 18,
+    color: '#BBB', // Light gray color for subtext in dark mode
+    marginTop: 20,
   },
   coinBalance: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#FFF',
-    marginTop: 16,
+    color: 'lightgrey',
+    marginTop: 7,
   },
   gridContainer: {
     flexGrow: 1,

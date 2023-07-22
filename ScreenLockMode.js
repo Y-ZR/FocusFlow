@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AppState, View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { AppState, View, Text, StyleSheet, TextInput, TouchableOpacity, Alert, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { auth, db } from './firebase';
 import { collection, query, where, getDocs, getDoc, doc, updateDoc } from 'firebase/firestore';
@@ -163,6 +163,7 @@ const ScreenLockScreen = () => {
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
       )}
+      <Image source={require('./assets/ORBIMG10.png')} style={styles.lockIcon} />
       <Text style={styles.heading}>Lock your phone!</Text>
       <Text style={styles.subText}>Please enter the amount of time (in mins) to lock your phone for:</Text>
       <View style={styles.timerContainer}>
@@ -203,6 +204,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#121212',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  lockIcon: {
+    width: 200,
+    height: 200,
+    resizeMode: 'contain',
+    marginBottom: -16,
   },
   backButton: {
     position: 'absolute',

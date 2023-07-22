@@ -125,6 +125,7 @@ const RemoveFriendsScreen = () => {
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
       <Text style={styles.heading}>Remove a Friend...</Text>
+      <Text style={styles.subText}>Enter your enemy's username below:</Text>
       <TextInput
         style={styles.input}
         placeholder="Friend's Username"
@@ -151,8 +152,12 @@ const styles = StyleSheet.create({
   heading: {
     fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 8,
     color: '#FFF', // White text color for dark mode
+  },
+  subText: {
+    fontSize: 16,
+    color: 'lightgrey', // Light grey color for subtext
   },
   backButton: {
     position: 'absolute',
@@ -171,7 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginBottom: 16,
+    marginBottom: 10,
     marginTop: 16,
   },
   buttonGreen: {
