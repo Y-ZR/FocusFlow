@@ -38,7 +38,8 @@ const createNewUserDocument = (userId, email, username) => {
     mosttimeever: 0,
     avatars: [],
     friends:[],
-    requests: []
+    requests: [],
+    profilePic: ""
   });
 };
 

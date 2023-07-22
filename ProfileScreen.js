@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import { collection, query, where, doc, getDoc, getDocs } from 'firebase/firestore';
+import { collection, query, where, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
 import { db, auth } from './firebase';
 
 const ProfileScreen = () => {
@@ -12,6 +11,18 @@ const ProfileScreen = () => {
   const [currentCoins, setCurrentCoins] = useState(0);
   const [numOfFriends, setNumFriends] = useState(0);
   const [mostTimeEver, setTime] = useState(0);
+  const [profilePic, setProfilePic] = useState('');
+
+  const avatarsMap = new Map([
+    ['ORBIMG1', require('./assets/ORBIMG1.jpg')],
+    ['ORBIMG2', require('./assets/ORBIMG2.jpg')],
+    ['ORBIMG3', require('./assets/ORBIMG3.jpg')],
+    ['ORBIMG4', require('./assets/ORBIMG4.jpg')],
+    ['ORBIMG5', require('./assets/ORBIMG5.jpg')],
+    ['ORBIMG6', require('./assets/ORBIMG6.jpg')],
+    ['ORBIMG7', require('./assets/ORBIMG7.jpg')],
+    ['ORBIMG8', require('./assets/ORBIMG8.jpg')],
+  ]);
 
   useEffect(() => {
     // Fetch the user's data from Firestore
@@ -23,15 +34,20 @@ const ProfileScreen = () => {
         if (!querySnapshot.empty) {
           const documentSnapshot = querySnapshot.docs[0];
           const userDocRef = doc(db, 'users', documentSnapshot.id);
-          const userDocSnap = await getDoc(userDocRef);
-          if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
+
+          // Set up a real-time listener for the user document
+          const unsubscribe = onSnapshot(userDocRef, (docSnapshot) => {
+            const userData = docSnapshot.data();
             setUsername(userData.username);
             setTotalCoinsEarned(userData.totalcoinsever);
-            setCurrentCoins(userData.coins); // Assuming userData.coins is the property for current coins
+            setCurrentCoins(userData.coins);
             setNumFriends(userData.friends.length);
             setTime(userData.mosttimeever);
-          }
+            setProfilePic(userData.profilePic);
+          });
+
+          // Clean up the listener when the component unmounts
+          return () => unsubscribe();
         }
       } catch (error) {
         console.log('Error fetching user data:', error);
@@ -43,12 +59,21 @@ const ProfileScreen = () => {
 
   const handleAvatarsUnlocked = () => {
     navigation.navigate('OwnedAvatar');
-    // CREATE A PAGE OF ALL AVATARS COLLECTED
-    // REPLACE THE LIU ZHENGYANG TEXT WITH A FIREBASE-STORED USERNAME
   };
 
   const handleBack = () => {
     navigation.goBack();
+  };
+
+  const getProfilePictureSource = () => {
+    // Check if profilePic exists in avatarsMap
+    if (avatarsMap.has(profilePic)) {
+      // Return the image source for the corresponding profilePic value
+      return avatarsMap.get(profilePic);
+    } else {
+      // If the profilePic value doesn't exist in avatarsMap, use a default image source
+      return require('./assets/default-pic.jpg') ; // Replace 'default-profile-pic' with the source for the default profile picture image
+    }
   };
 
   return (
@@ -61,7 +86,10 @@ const ProfileScreen = () => {
       <View style={styles.facebookLayout}>
         <View style={styles.profileContainer}>
           <View style={styles.profilePictureContainer}>
-            <Icon name="ios-person" size={120} color="#FFF" />
+            <Image
+              source={getProfilePictureSource()} // Call getProfilePictureSource() to get the image source
+              style={styles.profilePicture} // Add or adjust the styles for the profile picture image
+            />
           </View>
           <Text style={styles.username}>{username}</Text>
         </View>
@@ -92,6 +120,12 @@ const ProfileScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  profilePicture: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    resizeMode: 'cover', // Adjust the resizeMode based on your image requirements
+  },
   container: {
     flex: 1,
     backgroundColor: '#121212',
