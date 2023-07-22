@@ -34,7 +34,7 @@ const createNewUserDocument = (userId, email, username) => {
     email: email,
     username: username,
     totalcoinsever: 0,
-    coins: 800, // Initial coin balance
+    coins: 0, // Initial coin balance
     mosttimeever: 0,
     avatars: [],
     friends:[],
@@ -154,6 +154,10 @@ const RegisterScreen = ({ navigation }) => {
     Alert.alert('Email is taken!', 'Please choose a different email.');
   };
 
+  const handleWeakPassword = () => {
+    Alert.alert('Password is too short!', "Please use a password that is 7 characters or longer.");
+  };
+
   const handleEmptyEmail = () => {
     Alert.alert('Please fill in a valid email!', 'Email field cannot be empty.');
   };
@@ -190,7 +194,6 @@ const RegisterScreen = ({ navigation }) => {
       const userCollectionRef = collection(db, 'users');
       const usernameQuery = query(userCollectionRef, where('username', '==', username));
       const usernameQuerySnapshot = await getDocs(usernameQuery);
-  
       if (!usernameQuerySnapshot.empty) {
         // Username already exists
         handleUsernameTaken();
@@ -217,6 +220,9 @@ const RegisterScreen = ({ navigation }) => {
             break;
           case 'auth/email-already-in-use':
             handleEmailTaken();
+            break;
+          case 'auth/weak-password':
+            handleWeakPassword();
             break;
           default:
             console.log('Registration failed:', error);
