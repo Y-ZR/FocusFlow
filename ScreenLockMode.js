@@ -55,8 +55,9 @@ const ScreenLockScreen = () => {
     if (!isAppInBackground) {
       // If the app is not in the background, check if the countdown is active and show the alert
       if (countdown > 0) {
-        Alert.alert('You have attempted to exit the app!', 'We are disappointed in you. You will not earn any coins from that session.',
-         [{ text: 'Sorry, I will reflect upon my life', style: 'destructive', onPress: handleQuitConfirmed },]);
+        navigation.goBack();
+        Alert.alert('You have attempted to exit the app!', 'We are disappointed in you.',
+         [{ text: 'Sorry', style: 'destructive', onPress: handleQuitConfirmed },]);
       }
     }
   }, [isAppInBackground]);
@@ -174,7 +175,7 @@ const ScreenLockScreen = () => {
             style={styles.input}
             value={time}
             onChangeText={setTime}
-            keyboardType="numeric"
+            keyboardType="default"
             textAlign="center"
             fontSize={48}
           />

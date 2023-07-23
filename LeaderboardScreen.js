@@ -32,11 +32,11 @@ const LeaderboardScreen = () => {
                 const friendDocSnap = await getDoc(friendDocRef);
                 if (friendDocSnap.exists()) {
                   const friendData = friendDocSnap.data();
-                  userFriendsData.push({ username: friendName, coins: friendData.totalcoinsever });
+                  userFriendsData.push({ username: friendName, coins: friendData.coins, totalcoinsever:friendData.totalcoinsever, });
                 }
               }
             }
-            userFriendsData.push({ username: userData.username, coins: userData.totalcoinsever });
+            userFriendsData.push({ username: userData.username, coins: userData.coins, totalcoinsever: userData.totalcoinsever, });
             setUserFriends(userFriendsData);
           }
         }
@@ -57,7 +57,7 @@ const LeaderboardScreen = () => {
       <View style={styles.friendContainer}>
         <Text style={styles.friendRank}>#{sortedFriends.indexOf(item) + 1}</Text>
         <Text style={styles.friendUsername}>{item.username}</Text>
-        <Text style={styles.friendCoins}>{item.coins}</Text>
+        <Text style={styles.friendCoins}>{item.totalcoinsever}</Text>
         <Text style={styles.coins}> coins</Text>
       </View>
     );
@@ -77,6 +77,7 @@ const LeaderboardScreen = () => {
         data={sortedFriends}
         keyExtractor={(item) => item.username} // Assuming username is unique
         renderItem={renderFriendItem}
+        horizontal={false}
       />
       <TouchableOpacity
         style={styles.addButton}
