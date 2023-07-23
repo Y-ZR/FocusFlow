@@ -32,11 +32,11 @@ const LeaderboardScreen = () => {
                 const friendDocSnap = await getDoc(friendDocRef);
                 if (friendDocSnap.exists()) {
                   const friendData = friendDocSnap.data();
-                  userFriendsData.push({ username: friendName, coins: friendData.coins });
+                  userFriendsData.push({ username: friendName, coins: friendData.totalcoinsever });
                 }
               }
             }
-            userFriendsData.push({ username: userData.username, coins: userData.coins });
+            userFriendsData.push({ username: userData.username, coins: userData.totalcoinsever });
             setUserFriends(userFriendsData);
           }
         }
