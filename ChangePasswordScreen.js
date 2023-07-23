@@ -21,6 +21,11 @@ const ChangePasswordScreen = () => {
       return;
     }
 
+    if (newPassword === currentPassword) {
+      Alert.alert("The password must be different from you old password!");
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       Alert.alert('Password Mismatch', 'The new password and confirm password do not match.');
       return;
@@ -142,7 +147,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#006400', // Duller green color for buttons
     borderRadius: 8,
-    width: '22%', // Set a fixed width for the buttons
+    width: '42%', // Set a fixed width for the buttons
     justifyContent: 'center', // Center the text inside the button
     alignItems: 'center', // Center the text inside the button
   },

@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#006400', // Duller green color for buttons
     borderRadius: 8,
-    width: '24%', // Set a fixed width for the buttons
+    width: '25%', // Set a fixed width for the buttons
     justifyContent: 'center', // Center the text inside the button
     alignItems: 'center', // Center the text inside the button
   },
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#006400', // Duller green color for buttons
     borderRadius: 8,
-    width: '23%', // Set a fixed width for the buttons
+    width: '25%', // Set a fixed width for the buttons
     justifyContent: 'center', // Center the text inside the button
     alignItems: 'center', // Center the text inside the button
   },

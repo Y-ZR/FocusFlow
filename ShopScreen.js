@@ -140,7 +140,7 @@ const ShopScreen = () => {
             <Image source={require('./assets/ORBIMG1.jpg')} style={styles.image} />
             {userAvatars.includes('ORBIMG1') ? (
               <TouchableOpacity style={styles.ownedButton}>
-                <Text style={styles.ownedButtonText}>Purchased!</Text>
+                <Text style={styles.ownedButtonText}>Owned</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -155,7 +155,7 @@ const ShopScreen = () => {
             <Image source={require('./assets/ORBIMG2.jpg')} style={styles.image} />
             {userAvatars.includes('ORBIMG2') ? (
               <TouchableOpacity style={styles.ownedButton}>
-                <Text style={styles.ownedButtonText}>Purchased!</Text>
+                <Text style={styles.ownedButtonText}>Owned</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -172,7 +172,7 @@ const ShopScreen = () => {
             <Image source={require('./assets/ORBIMG3.jpg')} style={styles.image} />
             {userAvatars.includes('ORBIMG3') ? (
               <TouchableOpacity style={styles.ownedButton}>
-                <Text style={styles.ownedButtonText}>Purchased!</Text>
+                <Text style={styles.ownedButtonText}>Owned</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -187,7 +187,7 @@ const ShopScreen = () => {
             <Image source={require('./assets/ORBIMG4.jpg')} style={styles.image} />
             {userAvatars.includes('ORBIMG4') ? (
               <TouchableOpacity style={styles.ownedButton}>
-                <Text style={styles.ownedButtonText}>Purchased!</Text>
+                <Text style={styles.ownedButtonText}>Owned</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -204,7 +204,7 @@ const ShopScreen = () => {
             <Image source={require('./assets/ORBIMG5.jpg')} style={styles.image} />
             {userAvatars.includes('ORBIMG5') ? (
               <TouchableOpacity style={styles.ownedButton}>
-                <Text style={styles.ownedButtonText}>Purchased!</Text>
+                <Text style={styles.ownedButtonText}>Owned</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -219,7 +219,7 @@ const ShopScreen = () => {
             <Image source={require('./assets/ORBIMG6.jpg')} style={styles.image} />
             {userAvatars.includes('ORBIMG6') ? (
               <TouchableOpacity style={styles.ownedButton}>
-                <Text style={styles.ownedButtonText}>Purchased!</Text>
+                <Text style={styles.ownedButtonText}>Owned</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -236,7 +236,7 @@ const ShopScreen = () => {
             <Image source={require('./assets/ORBIMG7.jpg')} style={styles.image} />
             {userAvatars.includes('ORBIMG7') ? (
               <TouchableOpacity style={styles.ownedButton}>
-                <Text style={styles.ownedButtonText}>Purchased!</Text>
+                <Text style={styles.ownedButtonText}>Owned</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -251,7 +251,7 @@ const ShopScreen = () => {
             <Image source={require('./assets/ORBIMG8.jpg')} style={styles.image} />
             {userAvatars.includes('ORBIMG8') ? (
               <TouchableOpacity style={styles.ownedButton}>
-                <Text style={styles.ownedButtonText}>Purchased!</Text>
+                <Text style={styles.ownedButtonText}>Owned</Text>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -340,12 +340,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: '#006400',
     borderRadius: 8,
-    width: '57%',
+    width: '62%',
   },
   buyButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FFF',
+    textAlign: 'center',
   },
   ownedButton: {
     marginTop: 8,
@@ -353,12 +354,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: '#888',
     borderRadius: 8,
-    width: '58%',
+    width: '62%',
   },
   ownedButtonText: {
     fontSize: 14,
     fontWeight: 'bold',
     color: '#FFF',
+    textAlign: 'center',
   },
 });
 

@@ -49,7 +49,7 @@ const LeaderboardScreen = () => {
   }, []);
 
   // Sort userFriends based on coins (highest to lowest)
-  const sortedFriends = userFriends.sort((a, b) => b.coins - a.coins);
+  const sortedFriends = userFriends.sort((a, b) => b.totalcoinsever - a.totalcoinsever);
 
   // FlatList renderItem function to render each friend's data
   const renderFriendItem = ({ item }) => {
