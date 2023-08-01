@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { getFirestore, collection, addDoc, doc, getDoc, onSnapshot, query, where, getDocs, updateDoc, querySnapshot } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { auth, db } from './firebase';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
@@ -16,9 +18,14 @@ const SettingsScreen = () => {
 
   const handleLogout = async () => {
     try {
-      // Implement logout functionality
-      // Example: Clear user session, navigate to login screen, etc.
-    
+      const userId = auth.currentUser?.uid;
+      const userCollectionRef = collection(db, 'users');
+      const userQuery = await getDocs(query(userCollectionRef, where('userId', '==', userId)));
+      if (!userQuery.empty) {
+        const documentSnapshot = userQuery.docs[0];
+        const userDocRef = doc(db, 'users', documentSnapshot.id);
+        await updateDoc(userDocRef, { online: false });
+      }
       // Clear user session
       await AsyncStorage.clear();
     

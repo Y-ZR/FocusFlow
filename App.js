@@ -20,7 +20,7 @@ import RemoveFriendsScreen from './RemoveFriendsScreen';
 import FriendRequestScreen from './FriendRequestScreen';
 import FriendListScreen from './FriendListScreen';
 import OwnedAvatarScreen from './OwnedAvatarScreen';
-import { getFirestore, collection, addDoc, doc, getDoc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, doc, getDoc, getDocs, onSnapshot, query, where, updateDoc } from 'firebase/firestore';
 
 const Stack = createStackNavigator();
 const auth = getAuth(app);
@@ -39,7 +39,8 @@ const createNewUserDocument = (userId, email, username) => {
     avatars: [],
     friends:[],
     requests: [],
-    profilePic: ""
+    profilePic: "",
+    online: false
   });
 };
 
@@ -76,17 +77,33 @@ const LoginScreen = ({ navigation }) => {
       handleEmptyEmail();
       return;
     }
-
+  
     if (!password) {
       handleEmptyPassword();
       return;
     }
-
+  
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         // Login successful
         const user = userCredential.user;
         console.log('User logged in:', user);
+  
+        // Update the 'online' field to true for the user document
+        try {
+          const userId = auth.currentUser?.uid;
+          const usersCollectionRef = collection(db, 'users');
+          const userQuerySnapshot = await getDocs(query(usersCollectionRef, where('userId', '==', userId)));
+  
+          if (!userQuerySnapshot.empty) {
+            const documentSnapshot = userQuerySnapshot.docs[0];
+            const userDocRef = doc(db, 'users', documentSnapshot.id);
+            await updateDoc(userDocRef, { online: true }); // Set the 'online' field to true
+          }
+        } catch (error) {
+          console.error('Error updating user status:', error);
+        }
+  
         navigation.navigate('Home');
       })
       .catch((error) => {
@@ -299,9 +316,15 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
-  const handleLogout = () => {
-    // Implement the logout functionality here
-    // For example, you can sign out the user using the Firebase auth API
+  const handleLogout = async () => {
+    const userId = auth.currentUser?.uid;
+    const userCollectionRef = collection(db, 'users');
+    const userQuery = await getDocs(query(userCollectionRef, where('userId', '==', userId)));
+    if (!userQuery.empty) {
+      const documentSnapshot = userQuery.docs[0];
+      const userDocRef = doc(db, 'users', documentSnapshot.id);
+      await updateDoc(userDocRef, { online: false });
+    }
     // Logout successful
     console.log('User logged out successfully.');
     navigation.navigate('Login'); // Navigate to the Login screen after logout
