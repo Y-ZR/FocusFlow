@@ -2,7 +2,7 @@
 
 FocusFlow is a mobile application designed to help users enhance their productivity by implementing focused work sessions and providing incentives for staying on task.
 
-![FocusFlow Poster](assets/FocusFlow Poster.png)
+![FocusFlow Poster](/assets/FocusFlow Poster.png)
 
 ## Features
 
