@@ -1,6 +1,8 @@
-# FocusFlow# FocusFlow - Boost Your Productivity
+# FocusFlow - Boost Your Productivity
 
 FocusFlow is a mobile application designed to help users enhance their productivity by implementing focused work sessions and providing incentives for staying on task.
+
+![FocusFlow Poster](assets/FocusFlow Poster.png)
 
 ## Features
 
